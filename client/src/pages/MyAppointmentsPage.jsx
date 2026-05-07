@@ -68,7 +68,7 @@ export function MyAppointmentsPage() {
   const past = appointments.filter((a) => isPast(new Date(a.startTime)) || a.status === 'cancelled')
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-cream" dir="rtl">
       <Navbar />
       <Toaster />
       <main className="container mx-auto px-4 py-10 max-w-2xl">

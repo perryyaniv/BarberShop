@@ -19,7 +19,7 @@ export function BookPage() {
   if (!customer) return null
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-cream" dir="rtl">
       <Navbar />
       <main className="container mx-auto px-4 py-10 max-w-2xl">
         <BookingWizard services={services} />

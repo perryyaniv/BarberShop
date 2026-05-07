@@ -26,7 +26,7 @@ export function HomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-cream" dir="rtl">
       <Navbar />
       <main>
         <HeroSection shop={shop} />

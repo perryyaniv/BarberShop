@@ -75,7 +75,7 @@ export function CustomerLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-charcoal flex items-center justify-center px-4">
+    <div className="min-h-screen bg-charcoal flex items-center justify-center px-4" dir="rtl">
       <div className="absolute inset-0 bg-gradient-to-br from-charcoal via-charcoal-dark to-black opacity-90" />
 
       <div className="relative z-10 w-full max-w-sm">

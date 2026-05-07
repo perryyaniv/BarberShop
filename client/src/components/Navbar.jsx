@@ -68,7 +68,7 @@ export function Navbar() {
               </Button>
 
               {profileOpen && (
-                <div className="absolute left-0 top-full mt-2 w-44 bg-white rounded-xl shadow-lg border border-ink/10 overflow-hidden z-50">
+                <div className="absolute right-0 top-full mt-2 w-44 bg-white rounded-xl shadow-lg border border-ink/10 overflow-hidden z-50">
                   <Link
                     to="/my-appointments"
                     onClick={() => setProfileOpen(false)}
