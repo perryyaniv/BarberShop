@@ -6,12 +6,14 @@ import { ServicesSection } from '../components/sections/ServicesSection'
 import { GallerySection } from '../components/sections/GallerySection'
 import { Footer } from '../components/Footer'
 import { Toaster } from '../components/ui/toaster'
+import { LoadingScreen } from '../components/LoadingScreen'
 import api from '../lib/api'
 
 export function HomePage() {
   const [shop, setShop] = useState(null)
   const [services, setServices] = useState([])
   const [workingHours, setWorkingHours] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
@@ -22,8 +24,10 @@ export function HomePage() {
       setShop(shopRes.data.shop)
       setServices(servicesRes.data.services)
       setWorkingHours(hoursRes.data.hours)
-    })
+    }).finally(() => setLoading(false))
   }, [])
+
+  if (loading) return <LoadingScreen />
 
   return (
     <div className="min-h-screen bg-cream" dir="rtl">
