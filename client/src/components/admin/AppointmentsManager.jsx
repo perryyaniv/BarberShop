@@ -155,13 +155,13 @@ export function AppointmentsManager() {
       {/* Filters */}
       <div className="space-y-3">
         {/* Preset tabs */}
-        <div className="flex gap-1 bg-cream-warm rounded-lg p-1 w-fit">
+        <div className="flex gap-1 bg-cream-warm rounded-lg p-1 w-full sm:w-fit overflow-x-auto">
           {PRESETS.map((p) => (
             <button
               key={p.key}
               onClick={() => handlePreset(p.key)}
               className={cn(
-                'px-3 py-1.5 rounded-md text-sm font-medium transition-all',
+                'flex-1 sm:flex-none px-3 py-1.5 rounded-md text-sm font-medium transition-all whitespace-nowrap',
                 preset === p.key ? 'bg-white shadow-sm text-charcoal font-semibold' : 'text-ink/60 hover:text-ink'
               )}
             >
@@ -170,21 +170,18 @@ export function AppointmentsManager() {
           ))}
         </div>
 
-        <div className="flex gap-3 flex-wrap">
-          {/* Search */}
-          <div className="relative flex-1 min-w-[200px]">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <div className="relative flex-1">
             <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/40" />
             <Input
-              className="ps-9"
+              className="ps-9 w-full"
               placeholder="Search by name or service..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-
-          {/* Status filter */}
           <select
-            className="h-10 rounded-md border border-ink/20 bg-white px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-gold"
+            className="h-10 rounded-md border border-ink/20 bg-white px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-gold w-full sm:w-auto"
             value={statusFilter}
             onChange={(e) => handleStatus(e.target.value)}
           >
@@ -242,43 +239,36 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
   return (
     <Card className={cn(a.status === 'cancelled' || a.status === 'no_show' ? 'opacity-60' : '')}>
       <CardContent className="py-3 px-4">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div className="flex items-start gap-3 min-w-0">
-            {/* Time column */}
-            <div className="text-center shrink-0 w-14">
-              <p className="font-mono font-bold text-charcoal text-base" dir="ltr">
-                {format(new Date(a.startTime), 'HH:mm')}
-              </p>
-              {showDate && (
-                <p className="text-xs text-ink/40 mt-0.5">{format(new Date(a.startTime), 'd/M')}</p>
-              )}
-            </div>
-
-            {/* Details */}
-            <div className="min-w-0">
-              <p className="font-semibold text-ink truncate">{a.customerId?.name ?? 'Unknown'}</p>
-              <p className="text-sm text-ink/60 truncate">
-                {a.serviceId?.name?.he ?? 'Service'}
-                <span className="text-ink/40"> · ₪{a.serviceId?.priceIls} · {a.serviceId?.durationMinutes}min</span>
-              </p>
-              {a.notes && <p className="text-xs text-ink/40 italic mt-0.5 truncate">{a.notes}</p>}
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-2 shrink-0">
-            <Badge variant={STATUS_COLORS[a.status]}>{a.status.replace('_', ' ')}</Badge>
-            {next && (
-              <Button size="sm" variant="secondary" onClick={() => onUpdateStatus(a._id, next)}>
-                → {next}
-              </Button>
-            )}
-            {a.status !== 'cancelled' && a.status !== 'completed' && (
-              <Button size="sm" variant="destructive" onClick={() => onUpdateStatus(a._id, 'cancelled')}>
-                Cancel
-              </Button>
+        <div className="flex items-start gap-3 min-w-0 mb-2">
+          <div className="text-center shrink-0 w-12">
+            <p className="font-mono font-bold text-charcoal text-base" dir="ltr">
+              {format(new Date(a.startTime), 'HH:mm')}
+            </p>
+            {showDate && (
+              <p className="text-xs text-ink/40 mt-0.5">{format(new Date(a.startTime), 'd/M')}</p>
             )}
           </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-ink truncate">{a.customerId?.name ?? 'Unknown'}</p>
+            <p className="text-sm text-ink/60 truncate">
+              {a.serviceId?.name?.he ?? 'Service'}
+              <span className="text-ink/40"> · ₪{a.serviceId?.priceIls} · {a.serviceId?.durationMinutes}min</span>
+            </p>
+            {a.notes && <p className="text-xs text-ink/40 italic mt-0.5 truncate">{a.notes}</p>}
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap ms-12">
+          <Badge variant={STATUS_COLORS[a.status]}>{a.status.replace('_', ' ')}</Badge>
+          {next && (
+            <Button size="sm" variant="secondary" onClick={() => onUpdateStatus(a._id, next)}>
+              → {next}
+            </Button>
+          )}
+          {a.status !== 'cancelled' && a.status !== 'completed' && (
+            <Button size="sm" variant="destructive" onClick={() => onUpdateStatus(a._id, 'cancelled')}>
+              Cancel
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

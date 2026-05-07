@@ -59,27 +59,35 @@ export function WorkingHoursEditor() {
         <div className="space-y-3">
           {hours.map((h) => (
             <Card key={h.dayOfWeek}>
-              <CardContent className="py-4 px-5 flex items-center gap-4 flex-wrap">
-                <div className="w-28 font-medium text-ink">{DAY_NAMES[h.dayOfWeek]}</div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={h.isActive}
-                    onChange={(e) => updateDay(h.dayOfWeek, { isActive: e.target.checked })}
-                    className="w-4 h-4 accent-gold"
-                  />
-                  <span className="text-sm text-ink/60">Open</span>
-                </label>
-                {h.isActive && (
-                  <div className="flex items-center gap-2">
-                    <Input type="time" value={h.startTime} onChange={(e) => updateDay(h.dayOfWeek, { startTime: e.target.value })} className="w-28" />
-                    <span className="text-ink/40">–</span>
-                    <Input type="time" value={h.endTime} onChange={(e) => updateDay(h.dayOfWeek, { endTime: e.target.value })} className="w-28" />
+              <CardContent className="py-4 px-5">
+                <div className="flex items-center justify-between gap-2 mb-3 sm:mb-0 sm:hidden">
+                  <span className="font-semibold text-ink">{DAY_NAMES[h.dayOfWeek]}</span>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={h.isActive} onChange={(e) => updateDay(h.dayOfWeek, { isActive: e.target.checked })} className="w-4 h-4 accent-gold" />
+                    <span className="text-sm text-ink/60">Open</span>
+                  </label>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="hidden sm:flex items-center gap-4 shrink-0">
+                    <div className="w-24 font-medium text-ink">{DAY_NAMES[h.dayOfWeek]}</div>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={h.isActive} onChange={(e) => updateDay(h.dayOfWeek, { isActive: e.target.checked })} className="w-4 h-4 accent-gold" />
+                      <span className="text-sm text-ink/60">Open</span>
+                    </label>
                   </div>
-                )}
-                <Button size="sm" variant="secondary" onClick={() => saveDay(h)} disabled={saving === h.dayOfWeek} className="ms-auto">
-                  {saving === h.dayOfWeek ? 'Saving...' : 'Save'}
-                </Button>
+                  {h.isActive ? (
+                    <div className="flex items-center gap-2 flex-1">
+                      <Input type="time" value={h.startTime} onChange={(e) => updateDay(h.dayOfWeek, { startTime: e.target.value })} className="flex-1 sm:w-28 sm:flex-none" />
+                      <span className="text-ink/40 shrink-0">–</span>
+                      <Input type="time" value={h.endTime} onChange={(e) => updateDay(h.dayOfWeek, { endTime: e.target.value })} className="flex-1 sm:w-28 sm:flex-none" />
+                    </div>
+                  ) : (
+                    <span className="text-sm text-ink/30 flex-1">Closed</span>
+                  )}
+                  <Button size="sm" variant="secondary" onClick={() => saveDay(h)} disabled={saving === h.dayOfWeek} className="w-full sm:w-auto">
+                    {saving === h.dayOfWeek ? 'Saving...' : 'Save'}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}

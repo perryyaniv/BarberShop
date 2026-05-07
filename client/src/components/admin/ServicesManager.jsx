@@ -119,22 +119,22 @@ export function ServicesManager() {
         <div className="space-y-3">
           {services.map((s) => (
             <Card key={s._id}>
-              <CardContent className="py-4 px-5 flex items-center justify-between gap-4 flex-wrap">
-                <div>
-                  <p className="font-semibold text-ink">{s.name.he}</p>
-                  <p className="text-sm text-ink/50">{s.name.en}</p>
-                  <div className="flex gap-3 mt-1 text-xs text-ink/60">
+              <CardContent className="py-4 px-5 flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-ink truncate">{s.name.he}</p>
+                  <p className="text-xs text-ink/50 truncate">{s.name.en}</p>
+                  <div className="flex flex-wrap gap-2 mt-1 text-xs text-ink/60">
                     <span>{s.durationMinutes} min</span>
                     <span>₪{s.priceIls}</span>
                     <Badge variant="outline">{s.category}</Badge>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => toggleActive(s)} className="text-ink/40 hover:text-gold transition-colors">
+                <div className="flex items-center gap-1 shrink-0">
+                  <button onClick={() => toggleActive(s)} className="p-2 text-ink/40 hover:text-gold transition-colors">
                     {s.isActive ? <ToggleRight className="w-6 h-6 text-green-500" /> : <ToggleLeft className="w-6 h-6" />}
                   </button>
-                  <button onClick={() => openEdit(s)} className="p-1.5 text-ink/40 hover:text-charcoal transition-colors"><Edit2 className="w-4 h-4" /></button>
-                  <button onClick={() => deleteService(s._id)} className="p-1.5 text-ink/40 hover:text-red-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={() => openEdit(s)} className="p-2 text-ink/40 hover:text-charcoal transition-colors"><Edit2 className="w-4 h-4" /></button>
+                  <button onClick={() => deleteService(s._id)} className="p-2 text-ink/40 hover:text-red-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
                 </div>
               </CardContent>
             </Card>
