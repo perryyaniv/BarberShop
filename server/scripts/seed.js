@@ -21,12 +21,13 @@ async function main() {
       he: 'ברוכים הבאים למרחב שבו יצירתיות פוגשת דיוק. רון פז, מעצב שיער בעל ניסיון עשיר, מזמין אתכם לחוויית טיפוח אישית המשלבת את הטרנדים הבינלאומיים המובילים עם התאמה מושלמת למבנה הפנים ולאורח החיים שלכם. כאן, כל תספורת היא אמנות וכל לקוח הוא במרכז.',
       en: 'Professional men\'s barbershop — haircuts, beard styling, and special treatments in a welcoming environment.',
     },
-    address: 'רחוב וייצמן 92, כפר סבא',
-    phone: '03-1234567',
-    email: 'info@barbershop.co.il',
+    address: 'ויצמן 92, כפר סבא',
+    phone: '054-7520575',
+    email: '',
     galleryUrls: [],
     socialLinks: {
       instagram: 'https://www.instagram.com/rp_hairstyles_?igsh=cWF4djZsYnU4cnRp&utm_source=qr',
+      whatsapp: 'https://wa.me/972547520575',
     },
   });
   console.log('Shop seeded');
@@ -49,13 +50,13 @@ async function main() {
 
   await WorkingHours.deleteMany({});
   await WorkingHours.insertMany([
-    { dayOfWeek: 0, startTime: '09:00', endTime: '19:00', isActive: true },
-    { dayOfWeek: 1, startTime: '09:00', endTime: '19:00', isActive: true },
-    { dayOfWeek: 2, startTime: '09:00', endTime: '19:00', isActive: true },
-    { dayOfWeek: 3, startTime: '09:00', endTime: '19:00', isActive: true },
-    { dayOfWeek: 4, startTime: '09:00', endTime: '19:00', isActive: true },
+    { dayOfWeek: 0, startTime: '10:00', endTime: '20:00', isActive: true },
+    { dayOfWeek: 1, startTime: '10:00', endTime: '20:00', isActive: true },
+    { dayOfWeek: 2, startTime: '10:00', endTime: '20:00', isActive: true },
+    { dayOfWeek: 3, startTime: '10:00', endTime: '20:00', isActive: true },
+    { dayOfWeek: 4, startTime: '10:00', endTime: '20:00', isActive: true },
     { dayOfWeek: 5, startTime: '09:00', endTime: '14:00', isActive: true },
-    { dayOfWeek: 6, startTime: '09:00', endTime: '19:00', isActive: false },
+    { dayOfWeek: 6, startTime: '09:00', endTime: '20:00', isActive: false },
   ]);
   console.log('Working hours seeded');
 
