@@ -9,6 +9,7 @@ async function main() {
       'name.he': 'רון פז',
       'name.en': 'Ron Paz',
       'description.he': 'ברוכים הבאים למרחב שבו יצירתיות פוגשת דיוק. רון פז, מעצב שיער בעל ניסיון עשיר, מזמין אתכם לחוויית טיפוח אישית המשלבת את הטרנדים הבינלאומיים המובילים עם התאמה מושלמת למבנה הפנים ולאורח החיים שלכם. כאן, כל תספורת היא אמנות וכל לקוח הוא במרכז.',
+      'socialLinks.instagram': 'https://www.instagram.com/rp_hairstyles_?igsh=cWF4djZsYnU4cnRp&utm_source=qr',
     }
   });
   console.log('Updated:', result.modifiedCount, 'document(s)');

@@ -26,7 +26,7 @@ async function main() {
     email: 'info@barbershop.co.il',
     galleryUrls: [],
     socialLinks: {
-      instagram: 'https://instagram.com/barbershop',
+      instagram: 'https://www.instagram.com/rp_hairstyles_?igsh=cWF4djZsYnU4cnRp&utm_source=qr',
       facebook: 'https://facebook.com/barbershop',
     },
   });
