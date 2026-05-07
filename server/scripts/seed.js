@@ -21,7 +21,7 @@ async function main() {
       he: 'ברוכים הבאים למרחב שבו יצירתיות פוגשת דיוק. רון פז, מעצב שיער בעל ניסיון עשיר, מזמין אתכם לחוויית טיפוח אישית המשלבת את הטרנדים הבינלאומיים המובילים עם התאמה מושלמת למבנה הפנים ולאורח החיים שלכם. כאן, כל תספורת היא אמנות וכל לקוח הוא במרכז.',
       en: 'Professional men\'s barbershop — haircuts, beard styling, and special treatments in a welcoming environment.',
     },
-    address: 'רחוב וייצמן, הוד השרון',
+    address: 'רחוב וייצמן 92, כפר סבא',
     phone: '03-1234567',
     email: 'info@barbershop.co.il',
     galleryUrls: [],

@@ -20,7 +20,14 @@ export function AboutSection({ shop, workingHours }) {
 
         <div className="grid md:grid-cols-2 gap-12 items-start">
           <div>
-            <h3 className="text-xl font-semibold text-charcoal mb-4">{t('about.ourStory')}</h3>
+            <div className="flex items-center gap-5 mb-6">
+              <img
+                src="/ron-paz.jpg"
+                alt="רון פז"
+                className="w-20 h-20 rounded-full object-cover object-top border-2 border-gold/50 shadow-md shrink-0"
+              />
+              <h3 className="text-xl font-semibold text-charcoal">{t('about.ourStory')}</h3>
+            </div>
             <p className="text-ink/70 leading-relaxed text-base">{description}</p>
             <div className="mt-8 space-y-4">
               {shop?.address && (
