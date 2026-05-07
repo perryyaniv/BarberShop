@@ -8,7 +8,6 @@ import { ChevronLeft, ChevronRight, Check, Download, X } from 'lucide-react'
 import { BookingStepper } from './BookingStepper'
 import { TimeSlotGrid } from './TimeSlotGrid'
 import { Button } from './ui/button'
-import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Textarea } from './ui/textarea'
 import { Toaster } from './ui/toaster'
@@ -27,7 +26,6 @@ export function BookingWizard({ services }) {
   const [selectedService, setSelectedService] = useState(null)
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
-  const [customerName, setCustomerName] = useState(customer?.fullName ?? '')
   const [notes, setNotes] = useState('')
   const [appointmentId, setAppointmentId] = useState(null)
   const [slots, setSlots] = useState([])
@@ -53,6 +51,18 @@ export function BookingWizard({ services }) {
       )
       setInactiveDays(inactive)
     }).catch(() => {})
+
+    if (customer?.phone) {
+      api.get(`/api/appointments/my?phone=${encodeURIComponent(customer.phone)}`).then(({ data }) => {
+        const hasActive = (data.appointments ?? []).some(
+          (a) => ['confirmed', 'pending_verification'].includes(a.status) && new Date(a.startTime) >= new Date()
+        )
+        if (hasActive) {
+          toast({ variant: 'destructive', title: 'כבר קיים תור פעיל על שמך. בטל אותו לפני הזמנה חדשה.' })
+          setTimeout(() => navigate('/my-appointments'), 1800)
+        }
+      }).catch(() => {})
+    }
   }, [])
 
   const loadSlots = useCallback(async (date, serviceId) => {
@@ -88,7 +98,7 @@ export function BookingWizard({ services }) {
         serviceId: selectedService._id,
         date: selectedDate,
         startTime: selectedTime,
-        customerName,
+        customerName: customer?.fullName ?? '',
         customerPhone: customer?.phone ?? '',
         notes,
       })
@@ -242,37 +252,25 @@ export function BookingWizard({ services }) {
         </div>
       )}
 
-      {/* Step 3: Your Details */}
+      {/* Step 3: Notes */}
       {step === 3 && (
         <div className="space-y-5">
           <h2 className="font-semibold text-lg text-ink">{t('booking.yourDetails')}</h2>
-          <div className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="name">{t('booking.name')}</Label>
-              <Input
-                id="name"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="ישראל ישראלי"
-                autoComplete="name"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="notes">{t('booking.notes')}</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder={t('booking.notesPlaceholder')}
-                rows={3}
-              />
-            </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="notes">{t('booking.notes')}</Label>
+            <Textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder={t('booking.notesPlaceholder')}
+              rows={3}
+            />
           </div>
           <div className="flex justify-between pt-2">
             <Button variant="ghost" size="sm" onClick={() => setStep(2)}>
               <ChevronRight className="w-4 h-4 rtl:rotate-0 ltr:rotate-180 me-1" />{t('booking.back')}
             </Button>
-            <Button variant="gold" disabled={!customerName.trim()} onClick={() => setStep(4)}>
+            <Button variant="gold" onClick={() => setStep(4)}>
               {t('booking.next')}<ChevronLeft className="w-4 h-4 rtl:rotate-0 ltr:rotate-180 ms-1" />
             </Button>
           </div>
@@ -287,7 +285,7 @@ export function BookingWizard({ services }) {
             <SummaryRow label={t('booking.steps.service')} value={selectedService.name[locale]} />
             <SummaryRow label={t('booking.steps.date')} value={formattedDate} />
             <SummaryRow label={t('booking.steps.time')} value={selectedTime} />
-            <SummaryRow label={t('booking.name')} value={customerName} />
+            <SummaryRow label={t('booking.name')} value={customer?.fullName ?? ''} />
             {notes && <SummaryRow label={t('booking.notes')} value={notes} />}
             <div className="border-t border-ink/10 pt-3 mt-3 flex justify-between font-bold text-charcoal">
               <span>₪{selectedService.priceIls}</span>
