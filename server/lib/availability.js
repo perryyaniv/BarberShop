@@ -22,8 +22,10 @@ async function getAvailableSlots(dateStr, durationMinutes) {
 
   const [blockedSlots, appointments] = await Promise.all([
     BlockedSlot.find({ startDatetime: { $lt: dayEnd }, endDatetime: { $gt: dayStart } }),
+    // Fetch every appointment that overlaps this day (start before dayEnd AND end after dayStart)
     Appointment.find({
-      startTime: { $gte: dayStart, $lt: dayEnd },
+      startTime: { $lt: dayEnd },
+      endTime: { $gt: dayStart },
       status: { $nin: ['cancelled', 'no_show'] },
     }),
   ]);
@@ -45,7 +47,10 @@ async function getAvailableSlots(dateStr, durationMinutes) {
     if (slotEnd > closeTime) break;
 
     const isBlocked = blockedSlots.some((b) => isOverlapping(cursor, slotEnd, b.startDatetime, b.endDatetime));
-    const isBooked = appointments.some((a) => isOverlapping(cursor, slotEnd, a.startTime, a.endTime));
+    const isBooked = appointments.some((a) => {
+      const apptEnd = a.endTime ?? addMinutes(a.startTime, 30); // fallback if endTime missing
+      return isOverlapping(cursor, slotEnd, a.startTime, apptEnd);
+    });
     const isPast = isBefore(cursor, new Date());
 
     slots.push({
