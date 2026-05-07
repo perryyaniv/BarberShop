@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isToday, isTomorrow } from 'date-fns'
-import { he as heLocale } from 'date-fns/locale'
 import { RefreshCw, Search, Calendar, List } from 'lucide-react'
 import { Card, CardContent } from '../ui/card'
 import { Button } from '../ui/button'
@@ -19,6 +18,14 @@ const STATUS_COLORS = {
   no_show: 'destructive',
 }
 
+const STATUS_LABELS = {
+  confirmed: 'מאושר',
+  pending_verification: 'ממתין לאימות',
+  completed: 'הושלם',
+  cancelled: 'בוטל',
+  no_show: 'לא הגיע',
+}
+
 const NEXT_STATUSES = {
   confirmed: 'completed',
   pending_verification: 'confirmed',
@@ -27,19 +34,24 @@ const NEXT_STATUSES = {
   no_show: null,
 }
 
+const NEXT_LABELS = {
+  completed: 'סמן כהושלם',
+  confirmed: 'אשר',
+}
+
 const PRESETS = [
-  { label: 'Today', key: 'today' },
-  { label: 'This Week', key: 'week' },
-  { label: 'This Month', key: 'month' },
-  { label: 'All', key: 'all' },
+  { label: 'היום', key: 'today' },
+  { label: 'השבוע', key: 'week' },
+  { label: 'החודש', key: 'month' },
+  { label: 'הכל', key: 'all' },
 ]
 
 const STATUSES = [
-  { label: 'All Statuses', value: 'all' },
-  { label: 'Confirmed', value: 'confirmed' },
-  { label: 'Completed', value: 'completed' },
-  { label: 'Cancelled', value: 'cancelled' },
-  { label: 'No Show', value: 'no_show' },
+  { label: 'כל הסטטוסים', value: 'all' },
+  { label: 'מאושר', value: 'confirmed' },
+  { label: 'הושלם', value: 'completed' },
+  { label: 'בוטל', value: 'cancelled' },
+  { label: 'לא הגיע', value: 'no_show' },
 ]
 
 function getPresetRange(key) {
@@ -52,9 +64,9 @@ function getPresetRange(key) {
 
 function dayLabel(dateStr) {
   const d = new Date(dateStr)
-  if (isToday(d)) return 'Today'
-  if (isTomorrow(d)) return 'Tomorrow'
-  return format(d, 'EEEE, d MMM yyyy')
+  if (isToday(d)) return 'היום'
+  if (isTomorrow(d)) return 'מחר'
+  return format(d, 'EEEE, d/M/yyyy')
 }
 
 export function AppointmentsManager() {
@@ -63,7 +75,7 @@ export function AppointmentsManager() {
   const [preset, setPreset] = useState('today')
   const [statusFilter, setStatusFilter] = useState('all')
   const [search, setSearch] = useState('')
-  const [view, setView] = useState('schedule') // 'schedule' | 'list'
+  const [view, setView] = useState('schedule')
 
   async function load(p = preset, s = statusFilter) {
     setLoading(true)
@@ -86,23 +98,15 @@ export function AppointmentsManager() {
     try {
       await api.put(`/api/admin/appointments/${id}`, { status })
       setAppointments((prev) => prev.map((a) => a._id === id ? { ...a, status } : a))
-      toast({ variant: 'success', title: 'Status updated' })
+      toast({ variant: 'success', title: 'סטטוס עודכן' })
     } catch {
-      toast({ variant: 'destructive', title: 'Failed to update' })
+      toast({ variant: 'destructive', title: 'שגיאה בעדכון' })
     }
   }
 
-  function handlePreset(key) {
-    setPreset(key)
-    load(key, statusFilter)
-  }
+  function handlePreset(key) { setPreset(key); load(key, statusFilter) }
+  function handleStatus(s) { setStatusFilter(s); load(preset, s) }
 
-  function handleStatus(s) {
-    setStatusFilter(s)
-    load(preset, s)
-  }
-
-  // Client-side name search
   const filtered = useMemo(() => {
     if (!search.trim()) return appointments
     const q = search.toLowerCase()
@@ -113,7 +117,6 @@ export function AppointmentsManager() {
     )
   }, [appointments, search])
 
-  // Group by date for schedule view
   const grouped = useMemo(() => {
     const map = {}
     for (const a of filtered) {
@@ -128,22 +131,13 @@ export function AppointmentsManager() {
     <div className="space-y-5">
       <Toaster />
 
-      {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <h1 className="text-2xl font-bold text-charcoal">Appointments</h1>
+        <h1 className="text-2xl font-bold text-charcoal">ניהול תורים</h1>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setView('schedule')}
-            className={cn('p-2 rounded-lg transition-colors', view === 'schedule' ? 'bg-gold text-charcoal' : 'bg-cream-warm text-ink hover:bg-cream')}
-            title="Schedule view"
-          >
+          <button onClick={() => setView('schedule')} className={cn('p-2 rounded-lg transition-colors', view === 'schedule' ? 'bg-gold text-charcoal' : 'bg-cream-warm text-ink hover:bg-cream')} title="תצוגת לו״ז">
             <Calendar className="w-4 h-4" />
           </button>
-          <button
-            onClick={() => setView('list')}
-            className={cn('p-2 rounded-lg transition-colors', view === 'list' ? 'bg-gold text-charcoal' : 'bg-cream-warm text-ink hover:bg-cream')}
-            title="List view"
-          >
+          <button onClick={() => setView('list')} className={cn('p-2 rounded-lg transition-colors', view === 'list' ? 'bg-gold text-charcoal' : 'bg-cream-warm text-ink hover:bg-cream')} title="תצוגת רשימה">
             <List className="w-4 h-4" />
           </button>
           <Button variant="ghost" size="sm" onClick={() => load()} disabled={loading}>
@@ -152,19 +146,10 @@ export function AppointmentsManager() {
         </div>
       </div>
 
-      {/* Filters */}
       <div className="space-y-3">
-        {/* Preset tabs */}
         <div className="flex gap-1 bg-cream-warm rounded-lg p-1 w-full sm:w-fit overflow-x-auto">
           {PRESETS.map((p) => (
-            <button
-              key={p.key}
-              onClick={() => handlePreset(p.key)}
-              className={cn(
-                'flex-1 sm:flex-none px-3 py-1.5 rounded-md text-sm font-medium transition-all whitespace-nowrap',
-                preset === p.key ? 'bg-white shadow-sm text-charcoal font-semibold' : 'text-ink/60 hover:text-ink'
-              )}
-            >
+            <button key={p.key} onClick={() => handlePreset(p.key)} className={cn('flex-1 sm:flex-none px-3 py-1.5 rounded-md text-sm font-medium transition-all whitespace-nowrap', preset === p.key ? 'bg-white shadow-sm text-charcoal font-semibold' : 'text-ink/60 hover:text-ink')}>
               {p.label}
             </button>
           ))}
@@ -173,30 +158,20 @@ export function AppointmentsManager() {
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
             <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/40" />
-            <Input
-              className="ps-9 w-full"
-              placeholder="Search by name or service..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            <Input className="ps-9 w-full" placeholder="חפש לפי שם או שירות..." value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <select
-            className="h-10 rounded-md border border-ink/20 bg-white px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-gold w-full sm:w-auto"
-            value={statusFilter}
-            onChange={(e) => handleStatus(e.target.value)}
-          >
+          <select className="h-10 rounded-md border border-ink/20 bg-white px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-gold w-full sm:w-auto" value={statusFilter} onChange={(e) => handleStatus(e.target.value)}>
             {STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
         </div>
 
-        <p className="text-xs text-ink/40">{filtered.length} appointment{filtered.length !== 1 ? 's' : ''}</p>
+        <p className="text-xs text-ink/40">{filtered.length} תורים</p>
       </div>
 
-      {/* Content */}
       {loading ? (
-        <p className="text-ink/40 text-center py-16">Loading...</p>
+        <p className="text-ink/40 text-center py-16">טוען...</p>
       ) : filtered.length === 0 ? (
-        <Card><CardContent className="py-16 text-center text-ink/40">No appointments found</CardContent></Card>
+        <Card><CardContent className="py-16 text-center text-ink/40">לא נמצאו תורים</CardContent></Card>
       ) : view === 'schedule' ? (
         <ScheduleView groups={grouped} onUpdateStatus={updateStatus} />
       ) : (
@@ -214,7 +189,7 @@ function ScheduleView({ groups, onUpdateStatus }) {
           <div className="flex items-center gap-3 mb-3">
             <h2 className="font-semibold text-charcoal">{dayLabel(day)}</h2>
             <div className="flex-1 h-px bg-ink/10" />
-            <span className="text-xs text-ink/40 font-medium">{appts.length} appt{appts.length !== 1 ? 's' : ''}</span>
+            <span className="text-xs text-ink/40 font-medium">{appts.length} תורים</span>
           </div>
           <div className="space-y-2">
             {appts.map((a) => <AppointmentCard key={a._id} appt={a} onUpdateStatus={onUpdateStatus} />)}
@@ -244,29 +219,27 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
             <p className="font-mono font-bold text-charcoal text-base" dir="ltr">
               {format(new Date(a.startTime), 'HH:mm')}
             </p>
-            {showDate && (
-              <p className="text-xs text-ink/40 mt-0.5">{format(new Date(a.startTime), 'd/M')}</p>
-            )}
+            {showDate && <p className="text-xs text-ink/40 mt-0.5">{format(new Date(a.startTime), 'd/M')}</p>}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="font-semibold text-ink truncate">{a.customerId?.name ?? 'Unknown'}</p>
+            <p className="font-semibold text-ink truncate">{a.customerId?.name ?? 'לא ידוע'}</p>
             <p className="text-sm text-ink/60 truncate">
-              {a.serviceId?.name?.he ?? 'Service'}
-              <span className="text-ink/40"> · ₪{a.serviceId?.priceIls} · {a.serviceId?.durationMinutes}min</span>
+              {a.serviceId?.name?.he ?? 'שירות'}
+              <span className="text-ink/40"> · ₪{a.serviceId?.priceIls} · {a.serviceId?.durationMinutes} דק׳</span>
             </p>
             {a.notes && <p className="text-xs text-ink/40 italic mt-0.5 truncate">{a.notes}</p>}
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap ms-12">
-          <Badge variant={STATUS_COLORS[a.status]}>{a.status.replace('_', ' ')}</Badge>
+          <Badge variant={STATUS_COLORS[a.status]}>{STATUS_LABELS[a.status] ?? a.status}</Badge>
           {next && (
             <Button size="sm" variant="secondary" onClick={() => onUpdateStatus(a._id, next)}>
-              → {next}
+              {NEXT_LABELS[next] ?? next}
             </Button>
           )}
           {a.status !== 'cancelled' && a.status !== 'completed' && (
             <Button size="sm" variant="destructive" onClick={() => onUpdateStatus(a._id, 'cancelled')}>
-              Cancel
+              בטל
             </Button>
           )}
         </div>

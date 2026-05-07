@@ -27,15 +27,15 @@ export function CustomersManager() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-charcoal">Customers</h1>
+      <h1 className="text-2xl font-bold text-charcoal">לקוחות</h1>
       <div className="relative">
         <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/40" />
-        <Input className="ps-9" placeholder="Search by name or phone..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        <Input className="ps-9" placeholder="חפש לפי שם או טלפון..." value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
       {loading ? (
-        <p className="text-center text-ink/40 py-10">Loading...</p>
+        <p className="text-center text-ink/40 py-10">טוען...</p>
       ) : customers.length === 0 ? (
-        <Card><CardContent className="py-10 text-center text-ink/40">No customers found</CardContent></Card>
+        <Card><CardContent className="py-10 text-center text-ink/40">לא נמצאו לקוחות</CardContent></Card>
       ) : (
         <div className="space-y-3">
           {customers.map((c) => (
@@ -46,8 +46,8 @@ export function CustomersManager() {
                   <p className="text-sm text-ink/50" dir="ltr">{c.phone}</p>
                 </div>
                 <div className="text-end space-y-0.5">
-                  <p className="text-sm font-medium text-charcoal">{c.visitCount} visits</p>
-                  {c.lastVisit && <p className="text-xs text-ink/40">Last: {format(new Date(c.lastVisit), 'd/M/yyyy')}</p>}
+                  <p className="text-sm font-medium text-charcoal">{c.visitCount} ביקורים</p>
+                  {c.lastVisit && <p className="text-xs text-ink/40">אחרון: {format(new Date(c.lastVisit), 'd/M/yyyy')}</p>}
                 </div>
               </CardContent>
             </Card>

@@ -25,8 +25,8 @@ export function AdminNav() {
   const NavContent = () => (
     <>
       <div className="px-4 py-5 border-b border-white/10">
-        <p className="text-gold font-bold text-lg">BarberShop</p>
-        <p className="text-white/40 text-xs">Admin Panel</p>
+        <p className="font-bold text-lg"><span className="text-white">HairStyles </span><span className="text-gold">RP</span></p>
+        <p className="text-white/40 text-xs">פאנל ניהול</p>
       </div>
       <nav className="flex-1 p-4 space-y-1">
         {links.map(({ href, label, icon: Icon }) => {
@@ -51,7 +51,7 @@ export function AdminNav() {
           onClick={logout}
           className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-white/60 hover:bg-white/10 hover:text-white text-sm transition-all"
         >
-          <LogOut className="w-4 h-4" />Sign Out
+          <LogOut className="w-4 h-4" />יציאה
         </button>
       </div>
     </>

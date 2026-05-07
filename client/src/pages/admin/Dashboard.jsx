@@ -31,22 +31,22 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-charcoal">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-charcoal">לוח בקרה</h1>
 
       {stats && (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-          <StatCard icon={<Calendar className="w-5 h-5 text-gold" />} label="Today" value={stats.todayCount} />
-          <StatCard icon={<TrendingUp className="w-5 h-5 text-gold" />} label="This Week" value={stats.weekCount} />
-          <StatCard icon={<Users className="w-5 h-5 text-gold" />} label="Customers" value={stats.totalCustomers} />
+          <StatCard icon={<Calendar className="w-5 h-5 text-gold" />} label="היום" value={stats.todayCount} />
+          <StatCard icon={<TrendingUp className="w-5 h-5 text-gold" />} label="השבוע" value={stats.weekCount} />
+          <StatCard icon={<Users className="w-5 h-5 text-gold" />} label="לקוחות" value={stats.totalCustomers} />
         </div>
       )}
 
       <div>
         <h2 className="text-lg font-semibold text-charcoal mb-4">
-          Today's Appointments ({format(new Date(), 'd/M/yyyy')})
+          תורים היום ({format(new Date(), 'd/M/yyyy')})
         </h2>
         {todayAppts.length === 0 ? (
-          <Card><CardContent className="py-10 text-center text-ink/40">No appointments today</CardContent></Card>
+          <Card><CardContent className="py-10 text-center text-ink/40">אין תורים היום</CardContent></Card>
         ) : (
           <div className="space-y-3">
             {todayAppts.map((a) => (
@@ -55,7 +55,7 @@ export function Dashboard() {
                   <div>
                     <p className="font-semibold text-ink">{a.customerId?.name ?? 'Unknown'}</p>
                     <p className="text-sm text-ink/50">
-                      {a.serviceId?.name?.he ?? 'Service'} • <span dir="ltr">{a.customerId?.phone}</span>
+                      {a.serviceId?.name?.he ?? 'שירות'} • <span dir="ltr">{a.customerId?.phone}</span>
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-1">

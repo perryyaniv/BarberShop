@@ -10,6 +10,7 @@ import { toast } from '../../hooks/use-toast'
 import api from '../../lib/api'
 
 const CATEGORIES = ['haircut', 'beard', 'combo', 'other']
+const CATEGORY_LABELS = { haircut: 'תספורת', beard: 'זקן', combo: 'חבילה', other: 'אחר' }
 
 const emptyForm = {
   name: { he: '', en: '' }, description: { he: '', en: '' },
@@ -47,10 +48,10 @@ export function ServicesManager() {
     const method = editing ? 'put' : 'post'
     const res = await api[method](url, form)
     if (res.status === 200 || res.status === 201) {
-      toast({ variant: 'success', title: editing ? 'Service updated' : 'Service created' })
+      toast({ variant: 'success', title: editing ? 'שירות עודכן' : 'שירות נוצר' })
       setShowForm(false); load()
     } else {
-      toast({ variant: 'destructive', title: 'Save failed' })
+      toast({ variant: 'destructive', title: 'שגיאה בשמירה' })
     }
   }
 
@@ -60,61 +61,61 @@ export function ServicesManager() {
   }
 
   async function deleteService(id) {
-    if (!confirm('Delete this service?')) return
+    if (!confirm('למחוק שירות זה?')) return
     await api.delete(`/api/admin/services/${id}`)
-    toast({ title: 'Deleted' }); load()
+    toast({ title: 'נמחק' }); load()
   }
 
   return (
     <div className="space-y-6">
       <Toaster />
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-charcoal">Services</h1>
-        <Button variant="gold" size="sm" onClick={openCreate}><Plus className="w-4 h-4 me-1" /> Add Service</Button>
+        <h1 className="text-2xl font-bold text-charcoal">ניהול שירותים</h1>
+        <Button variant="gold" size="sm" onClick={openCreate}><Plus className="w-4 h-4 me-1" /> הוסף שירות</Button>
       </div>
 
       {showForm && (
         <Card>
           <CardContent className="py-6 px-5 space-y-4">
-            <h2 className="font-semibold text-charcoal">{editing ? 'Edit Service' : 'New Service'}</h2>
+            <h2 className="font-semibold text-charcoal">{editing ? 'ערוך שירות' : 'שירות חדש'}</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Name (Hebrew)</Label>
+                <Label>שם (עברית)</Label>
                 <Input value={form.name.he} onChange={(e) => setForm((f) => ({ ...f, name: { ...f.name, he: e.target.value } }))} />
               </div>
               <div className="space-y-1.5">
-                <Label>Name (English)</Label>
+                <Label>שם (אנגלית)</Label>
                 <Input value={form.name.en} onChange={(e) => setForm((f) => ({ ...f, name: { ...f.name, en: e.target.value } }))} />
               </div>
               <div className="space-y-1.5">
-                <Label>Duration (min)</Label>
+                <Label>משך (דקות)</Label>
                 <Input type="number" value={form.durationMinutes} onChange={(e) => setForm((f) => ({ ...f, durationMinutes: +e.target.value }))} />
               </div>
               <div className="space-y-1.5">
-                <Label>Price (₪)</Label>
+                <Label>מחיר (₪)</Label>
                 <Input type="number" value={form.priceIls} onChange={(e) => setForm((f) => ({ ...f, priceIls: +e.target.value }))} />
               </div>
               <div className="space-y-1.5">
-                <Label>Category</Label>
+                <Label>קטגוריה</Label>
                 <select className="flex h-10 w-full rounded-md border border-ink/20 bg-white px-3 py-2 text-sm" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}>
-                  {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
                 </select>
               </div>
               <div className="space-y-1.5">
-                <Label>Sort Order</Label>
+                <Label>סדר תצוגה</Label>
                 <Input type="number" value={form.sortOrder} onChange={(e) => setForm((f) => ({ ...f, sortOrder: +e.target.value }))} />
               </div>
             </div>
             <div className="flex gap-3 pt-2">
-              <Button variant="gold" onClick={save}>Save</Button>
-              <Button variant="ghost" onClick={() => setShowForm(false)}>Cancel</Button>
+              <Button variant="gold" onClick={save}>שמור</Button>
+              <Button variant="ghost" onClick={() => setShowForm(false)}>בטל</Button>
             </div>
           </CardContent>
         </Card>
       )}
 
       {loading ? (
-        <p className="text-center text-ink/40 py-10">Loading...</p>
+        <p className="text-center text-ink/40 py-10">טוען...</p>
       ) : (
         <div className="space-y-3">
           {services.map((s) => (
@@ -124,9 +125,9 @@ export function ServicesManager() {
                   <p className="font-semibold text-ink truncate">{s.name.he}</p>
                   <p className="text-xs text-ink/50 truncate">{s.name.en}</p>
                   <div className="flex flex-wrap gap-2 mt-1 text-xs text-ink/60">
-                    <span>{s.durationMinutes} min</span>
+                    <span>{s.durationMinutes} דק׳</span>
                     <span>₪{s.priceIls}</span>
-                    <Badge variant="outline">{s.category}</Badge>
+                    <Badge variant="outline">{CATEGORY_LABELS[s.category] ?? s.category}</Badge>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">

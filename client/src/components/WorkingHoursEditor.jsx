@@ -6,7 +6,7 @@ import { toast } from '../hooks/use-toast'
 import { Toaster } from './ui/toaster'
 import api from '../lib/api'
 
-const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+const DAY_NAMES = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת']
 
 const DEFAULT_HOURS = DAY_NAMES.map((_, i) => ({
   dayOfWeek: i, startTime: '09:00', endTime: '19:00', isActive: i !== 6,
@@ -38,12 +38,12 @@ export function WorkingHoursEditor() {
     try {
       const res = await api.put('/api/admin/working-hours', day)
       if (res.status === 200) {
-        toast({ variant: 'success', title: `${DAY_NAMES[day.dayOfWeek]} saved` })
+        toast({ variant: 'success', title: `יום ${DAY_NAMES[day.dayOfWeek]} נשמר` })
       } else {
-        toast({ variant: 'destructive', title: 'Save failed' })
+        toast({ variant: 'destructive', title: 'שגיאה בשמירה' })
       }
     } catch {
-      toast({ variant: 'destructive', title: 'Save failed' })
+      toast({ variant: 'destructive', title: 'שגיאה בשמירה' })
     } finally {
       setSaving(null)
     }
@@ -52,9 +52,9 @@ export function WorkingHoursEditor() {
   return (
     <div className="space-y-6">
       <Toaster />
-      <h1 className="text-2xl font-bold text-charcoal">Working Hours</h1>
+      <h1 className="text-2xl font-bold text-charcoal">שעות פעילות</h1>
       {loading ? (
-        <p className="text-center text-ink/40 py-10">Loading...</p>
+        <p className="text-center text-ink/40 py-10">טוען...</p>
       ) : (
         <div className="space-y-3">
           {hours.map((h) => (
@@ -64,15 +64,15 @@ export function WorkingHoursEditor() {
                   <span className="font-semibold text-ink">{DAY_NAMES[h.dayOfWeek]}</span>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={h.isActive} onChange={(e) => updateDay(h.dayOfWeek, { isActive: e.target.checked })} className="w-4 h-4 accent-gold" />
-                    <span className="text-sm text-ink/60">Open</span>
+                    <span className="text-sm text-ink/60">פתוח</span>
                   </label>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                   <div className="hidden sm:flex items-center gap-4 shrink-0">
-                    <div className="w-24 font-medium text-ink">{DAY_NAMES[h.dayOfWeek]}</div>
+                    <div className="w-20 font-medium text-ink">{DAY_NAMES[h.dayOfWeek]}</div>
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input type="checkbox" checked={h.isActive} onChange={(e) => updateDay(h.dayOfWeek, { isActive: e.target.checked })} className="w-4 h-4 accent-gold" />
-                      <span className="text-sm text-ink/60">Open</span>
+                      <span className="text-sm text-ink/60">פתוח</span>
                     </label>
                   </div>
                   {h.isActive ? (
@@ -82,10 +82,10 @@ export function WorkingHoursEditor() {
                       <Input type="time" value={h.endTime} onChange={(e) => updateDay(h.dayOfWeek, { endTime: e.target.value })} className="flex-1 sm:w-28 sm:flex-none" />
                     </div>
                   ) : (
-                    <span className="text-sm text-ink/30 flex-1">Closed</span>
+                    <span className="text-sm text-ink/30 flex-1">סגור</span>
                   )}
                   <Button size="sm" variant="secondary" onClick={() => saveDay(h)} disabled={saving === h.dayOfWeek} className="w-full sm:w-auto">
-                    {saving === h.dayOfWeek ? 'Saving...' : 'Save'}
+                    {saving === h.dayOfWeek ? 'שומר...' : 'שמור'}
                   </Button>
                 </div>
               </CardContent>
