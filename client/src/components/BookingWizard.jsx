@@ -8,8 +8,6 @@ import { ChevronLeft, ChevronRight, Check, Download, X } from 'lucide-react'
 import { BookingStepper } from './BookingStepper'
 import { TimeSlotGrid } from './TimeSlotGrid'
 import { Button } from './ui/button'
-import { Label } from './ui/label'
-import { Textarea } from './ui/textarea'
 import { Toaster } from './ui/toaster'
 import { toast } from '../hooks/use-toast'
 import { cn } from '../lib/utils'
@@ -26,19 +24,17 @@ export function BookingWizard({ services }) {
   const [selectedService, setSelectedService] = useState(null)
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
-  const [notes, setNotes] = useState('')
   const [appointmentId, setAppointmentId] = useState(null)
   const [slots, setSlots] = useState([])
   const [slotsLoading, setSlotsLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [inactiveDays, setInactiveDays] = useState(new Set())
 
-  // steps: 0=service, 1=date, 2=time, 3=details, 4=confirm, 5=success
+  // steps: 0=service, 1=date, 2=time, 3=confirm, 4=success
   const stepLabels = [
     t('booking.steps.service'),
     t('booking.steps.date'),
     t('booking.steps.time'),
-    t('booking.steps.details'),
     t('booking.steps.confirm'),
     t('booking.steps.success'),
   ]
@@ -100,10 +96,9 @@ export function BookingWizard({ services }) {
         startTime: selectedTime,
         customerName: customer?.fullName ?? '',
         customerPhone: customer?.phone ?? '',
-        notes,
       })
       setAppointmentId(data.appointmentId)
-      setStep(5)
+      setStep(4)
     } catch (err) {
       if (err.response?.data?.error === 'past_time') {
         toast({ variant: 'destructive', title: 'לא ניתן להזמין לשעה שכבר עברה' })
@@ -154,9 +149,9 @@ export function BookingWizard({ services }) {
       <Toaster />
       <h1 className="text-2xl font-bold text-charcoal text-center mb-6">{t('booking.title')}</h1>
 
-      {step < 5 && (
+      {step < 4 && (
         <div className="mb-8">
-          <BookingStepper steps={steps.slice(0, 5)} currentStep={step} />
+          <BookingStepper steps={steps.slice(0, 4)} currentStep={step} />
         </div>
       )}
 
@@ -252,33 +247,8 @@ export function BookingWizard({ services }) {
         </div>
       )}
 
-      {/* Step 3: Notes */}
-      {step === 3 && (
-        <div className="space-y-5">
-          <h2 className="font-semibold text-lg text-ink">{t('booking.yourDetails')}</h2>
-          <div className="space-y-1.5">
-            <Label htmlFor="notes">{t('booking.notes')}</Label>
-            <Textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={t('booking.notesPlaceholder')}
-              rows={3}
-            />
-          </div>
-          <div className="flex justify-between pt-2">
-            <Button variant="ghost" size="sm" onClick={() => setStep(2)}>
-              <ChevronRight className="w-4 h-4 rtl:rotate-0 ltr:rotate-180 me-1" />{t('booking.back')}
-            </Button>
-            <Button variant="gold" onClick={() => setStep(4)}>
-              {t('booking.next')}<ChevronLeft className="w-4 h-4 rtl:rotate-0 ltr:rotate-180 ms-1" />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 4: Confirm */}
-      {step === 4 && selectedService && (
+      {/* Step 3: Confirm */}
+      {step === 3 && selectedService && (
         <div className="space-y-6">
           <h2 className="font-semibold text-lg text-ink text-center">{t('booking.confirmBooking')}</h2>
           <div className="bg-cream-warm rounded-xl p-5 space-y-3">
@@ -286,14 +256,13 @@ export function BookingWizard({ services }) {
             <SummaryRow label={t('booking.steps.date')} value={formattedDate} />
             <SummaryRow label={t('booking.steps.time')} value={selectedTime} />
             <SummaryRow label={t('booking.name')} value={customer?.fullName ?? ''} />
-            {notes && <SummaryRow label={t('booking.notes')} value={notes} />}
             <div className="border-t border-ink/10 pt-3 mt-3 flex justify-between font-bold text-charcoal">
               <span>₪{selectedService.priceIls}</span>
               <span>{selectedService.durationMinutes} דקות</span>
             </div>
           </div>
           <div className="flex justify-between">
-            <Button variant="ghost" size="sm" onClick={() => setStep(3)}>{t('booking.back')}</Button>
+            <Button variant="ghost" size="sm" onClick={() => setStep(2)}>{t('booking.back')}</Button>
             <Button variant="gold" onClick={submitBooking} disabled={submitting} className="min-w-[140px]">
               {submitting ? t('common.loading') : t('booking.confirm')}
             </Button>
@@ -301,8 +270,8 @@ export function BookingWizard({ services }) {
         </div>
       )}
 
-      {/* Step 5: Success */}
-      {step === 5 && selectedService && (
+      {/* Step 4: Success */}
+      {step === 4 && selectedService && (
         <div className="text-center space-y-6 py-4">
           <div className="flex justify-center">
             <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
