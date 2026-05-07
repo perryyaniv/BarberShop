@@ -18,7 +18,7 @@ async function main() {
   await Shop.create({
     name: { he: 'ספרות מקצועית', en: 'Pro BarberShop' },
     description: {
-      he: 'ספרות מקצועית לגברים — תספורות, עיצוב זקן וטיפולים מיוחדים בסביבה נעימה ומקצועית.',
+      he: 'ברוכים הבאים למרחב שבו יצירתיות פוגשת דיוק. רון פז, מעצב שיער בעל ניסיון עשיר, מזמין אתכם לחוויית טיפוח אישית המשלבת את הטרנדים הבינלאומיים המובילים עם התאמה מושלמת למבנה הפנים ולאורח החיים שלכם. כאן, כל תספורת היא אמנות וכל לקוח הוא במרכז.',
       en: 'Professional men\'s barbershop — haircuts, beard styling, and special treatments in a welcoming environment.',
     },
     address: 'רחוב הרצל 1, תל אביב',

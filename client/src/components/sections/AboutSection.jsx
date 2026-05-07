@@ -7,7 +7,7 @@ export function AboutSection({ shop, workingHours }) {
 
   const description = shop?.description?.[locale]
     ?? (locale === 'he'
-      ? 'ספרות מקצועית לגברים, תספורות, עיצוב זקן וטיפולים מיוחדים.'
+      ? 'ברוכים הבאים למרחב שבו יצירתיות פוגשת דיוק. רון פז, מעצב שיער בעל ניסיון עשיר, מזמין אתכם לחוויית טיפוח אישית המשלבת את הטרנדים הבינלאומיים המובילים עם התאמה מושלמת למבנה הפנים ולאורח החיים שלכם. כאן, כל תספורת היא אמנות וכל לקוח הוא במרכז.'
       : "Professional men's barbershop — haircuts, beard styling, and more.")
 
   return (
