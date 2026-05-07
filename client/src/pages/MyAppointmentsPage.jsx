@@ -36,7 +36,7 @@ export function MyAppointmentsPage() {
   const [cancelling, setCancelling] = useState(null)
 
   useEffect(() => {
-    if (!customer) { navigate('/login?next=/my-appointments', { replace: true }); return }
+    if (!customer) { navigate('/login', { replace: true }); return }
     load()
   }, [customer])
 

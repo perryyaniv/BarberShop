@@ -12,7 +12,7 @@ export function BookPage() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!customer) { navigate('/login?next=/book', { replace: true }); return }
+    if (!customer) { navigate('/login', { replace: true }); return }
     api.get('/api/services').then(({ data }) => setServices(data.services ?? []))
   }, [customer])
 
