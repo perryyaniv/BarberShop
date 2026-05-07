@@ -69,9 +69,9 @@ export function AdminNav() {
         <NavContent />
       </aside>
 
-      {/* Mobile drawer — justify-end pushes it to the right side */}
+      {/* Mobile drawer — justify-start places it on the right in RTL */}
       {open && (
-        <div className="lg:hidden fixed inset-0 z-40 flex justify-end">
+        <div className="lg:hidden fixed inset-0 z-40 flex justify-start" dir="rtl">
           <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
           <aside className="relative w-64 flex flex-col bg-charcoal h-full">
             <button className="absolute top-4 left-4 text-white/60 hover:text-white" onClick={() => setOpen(false)}>
