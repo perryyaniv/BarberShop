@@ -12,7 +12,7 @@ export function HeroSection({ shop }) {
     <section id="home" className="relative min-h-[92vh] flex items-center justify-center bg-charcoal overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-charcoal via-charcoal-dark to-black opacity-90" />
 
-      <div className="relative z-10 text-center px-4 max-w-2xl mx-auto">
+      <div className="relative z-10 text-center px-4 max-w-2xl mx-auto -mt-12 sm:mt-0">
         <div className="flex justify-center mb-5">
           <div className="relative">
             <div className="absolute -inset-0.5 rounded-full bg-gradient-to-br from-gold/70 to-gold/20 blur-sm" />
