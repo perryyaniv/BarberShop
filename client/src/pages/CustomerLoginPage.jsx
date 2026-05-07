@@ -113,7 +113,7 @@ export function CustomerLoginPage() {
                 <Input
                   value={form.firstName}
                   onChange={set('firstName')}
-                  placeholder="רון"
+                  placeholder=""
                   required
                   autoComplete="given-name"
                 />
@@ -123,7 +123,7 @@ export function CustomerLoginPage() {
                 <Input
                   value={form.lastName}
                   onChange={set('lastName')}
-                  placeholder="כהן"
+                  placeholder=""
                   required
                   autoComplete="family-name"
                 />
