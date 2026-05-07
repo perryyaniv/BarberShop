@@ -122,7 +122,7 @@ export function BookingWizard({ services }) {
       {step === 0 && (
         <div className="space-y-4">
           <h2 className="font-semibold text-lg text-ink">{t('booking.selectService')}</h2>
-          <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+          <div className="space-y-3">
             {services.map((service) => (
               <button
                 key={service._id}

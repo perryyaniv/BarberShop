@@ -3,12 +3,12 @@ import { cn } from '../lib/utils'
 
 export function BookingStepper({ steps, currentStep }) {
   return (
-    <div className="flex items-center justify-center gap-0 overflow-x-auto pb-2">
+    <div className="flex items-center w-full">
       {steps.map((step, i) => (
-        <div key={step.index} className="flex items-center">
-          <div className="flex flex-col items-center">
+        <div key={step.index} className="flex items-center flex-1 last:flex-none">
+          <div className="flex flex-col items-center shrink-0">
             <div className={cn(
-              'w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 transition-all',
+              'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold border-2 transition-all',
               currentStep > step.index ? 'bg-gold border-gold text-charcoal'
                 : currentStep === step.index ? 'bg-charcoal border-charcoal text-white'
                 : 'bg-white border-ink/20 text-ink/40'
@@ -25,7 +25,7 @@ export function BookingStepper({ steps, currentStep }) {
             </span>
           </div>
           {i < steps.length - 1 && (
-            <div className={cn('h-0.5 w-8 sm:w-12 mx-1 transition-all', currentStep > step.index ? 'bg-gold' : 'bg-ink/15')} />
+            <div className={cn('h-0.5 flex-1 min-w-[8px] mx-1 transition-all', currentStep > step.index ? 'bg-gold' : 'bg-ink/15')} />
           )}
         </div>
       ))}
