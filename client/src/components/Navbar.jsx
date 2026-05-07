@@ -40,6 +40,11 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-charcoal/95 backdrop-blur-sm text-white shadow-md">
       <div className="container mx-auto flex items-center justify-between px-4 py-4 max-w-6xl">
+        {/* Hamburger first in DOM = rightmost in RTL flex on mobile */}
+        <button className="md:hidden p-2" onClick={() => setMenuOpen((v) => !v)} aria-label="Toggle menu">
+          {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+
         <Link to="/" className="flex items-center gap-2 font-bold text-lg">
           <Scissors className="w-5 h-5 text-gold" />
           <span>HairStyles </span>
@@ -68,7 +73,7 @@ export function Navbar() {
               </Button>
 
               {profileOpen && (
-                <div className="absolute right-0 top-full mt-2 w-44 bg-white rounded-xl shadow-lg border border-ink/10 overflow-hidden z-50">
+                <div className="absolute left-0 top-full mt-2 w-44 bg-white rounded-xl shadow-lg border border-ink/10 overflow-hidden z-50">
                   <Link
                     to="/my-appointments"
                     onClick={() => setProfileOpen(false)}
@@ -92,9 +97,6 @@ export function Navbar() {
               <Button variant="gold" size="sm">כניסה</Button>
             </Link>
           )}
-          <button className="md:hidden p-2" onClick={() => setMenuOpen((v) => !v)} aria-label="Toggle menu">
-            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
         </div>
       </div>
 
