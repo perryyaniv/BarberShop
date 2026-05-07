@@ -16,7 +16,7 @@ async function main() {
 
   await Shop.deleteMany({});
   await Shop.create({
-    name: { he: 'ספרות מקצועית', en: 'Pro BarberShop' },
+    name: { he: 'יצירתיות פוגשת דיוק', en: 'Pro BarberShop' },
     description: {
       he: 'ברוכים הבאים למרחב שבו יצירתיות פוגשת דיוק. רון פז, מעצב שיער בעל ניסיון עשיר, מזמין אתכם לחוויית טיפוח אישית המשלבת את הטרנדים הבינלאומיים המובילים עם התאמה מושלמת למבנה הפנים ולאורח החיים שלכם. כאן, כל תספורת היא אמנות וכל לקוח הוא במרכז.',
       en: 'Professional men\'s barbershop — haircuts, beard styling, and special treatments in a welcoming environment.',
