@@ -21,8 +21,8 @@ export function Navbar() {
       <div className="container mx-auto flex items-center justify-between px-4 py-4 max-w-6xl">
         <Link to="/" className="flex items-center gap-2 font-bold text-lg">
           <Scissors className="w-5 h-5 text-gold" />
-          <span className="text-gold">Pro</span>
-          <span>BarberShop</span>
+          <span>HairStyles </span>
+          <span className="text-gold">RP</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
