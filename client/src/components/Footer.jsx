@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from './LanguageSwitcher'
-import { Scissors, Instagram, MessageCircle, Phone, Mail, MapPin } from 'lucide-react'
+import { Scissors, Instagram, MessageCircle, Phone, MapPin } from 'lucide-react'
 
 export function Footer({ shop }) {
   const { t, i18n } = useTranslation()
@@ -35,12 +35,6 @@ export function Footer({ shop }) {
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="w-4 h-4 text-gold/70 shrink-0" />
                   <a href={`tel:${shop.phone}`} className="text-white/70 hover:text-gold transition-colors" dir="ltr">{shop.phone}</a>
-                </div>
-              )}
-              {shop?.email && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Mail className="w-4 h-4 text-gold/70 shrink-0" />
-                  <a href={`mailto:${shop.email}`} className="text-white/70 hover:text-gold transition-colors">{shop.email}</a>
                 </div>
               )}
             </div>

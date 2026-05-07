@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { MapPin, Phone, Mail, Clock } from 'lucide-react'
+import { MapPin, Phone, Clock } from 'lucide-react'
 
 export function AboutSection({ shop, workingHours }) {
   const { t, i18n } = useTranslation()
@@ -40,12 +40,6 @@ export function AboutSection({ shop, workingHours }) {
                 <div className="flex items-center gap-3">
                   <Phone className="w-5 h-5 text-gold shrink-0" />
                   <a href={`tel:${shop.phone}`} className="text-ink/80 hover:text-gold transition-colors" dir="ltr">{shop.phone}</a>
-                </div>
-              )}
-              {shop?.email && (
-                <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-gold shrink-0" />
-                  <a href={`mailto:${shop.email}`} className="text-ink/80 hover:text-gold transition-colors">{shop.email}</a>
                 </div>
               )}
             </div>
