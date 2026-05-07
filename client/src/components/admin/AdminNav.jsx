@@ -59,19 +59,22 @@ export function AdminNav() {
 
   return (
     <>
-      <button className="lg:hidden fixed top-4 start-4 z-50 p-2 bg-charcoal rounded-lg text-white" onClick={() => setOpen(true)}>
+      {/* Hamburger — explicit right-4 for RTL */}
+      <button className="lg:hidden fixed top-4 right-4 z-50 p-2 bg-charcoal rounded-lg text-white" onClick={() => setOpen(true)}>
         <Menu className="w-5 h-5" />
       </button>
 
+      {/* Desktop sidebar — appears on right in RTL flex container */}
       <aside className="hidden lg:flex w-56 flex-col bg-charcoal min-h-screen shrink-0">
         <NavContent />
       </aside>
 
+      {/* Mobile drawer — justify-end pushes it to the right side */}
       {open && (
-        <div className="lg:hidden fixed inset-0 z-40 flex">
+        <div className="lg:hidden fixed inset-0 z-40 flex justify-end">
           <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
-          <aside className="relative w-56 flex flex-col bg-charcoal h-full">
-            <button className="absolute top-4 end-4 text-white/60 hover:text-white" onClick={() => setOpen(false)}>
+          <aside className="relative w-64 flex flex-col bg-charcoal h-full">
+            <button className="absolute top-4 left-4 text-white/60 hover:text-white" onClick={() => setOpen(false)}>
               <X className="w-5 h-5" />
             </button>
             <NavContent />
