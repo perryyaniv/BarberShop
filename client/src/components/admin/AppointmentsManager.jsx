@@ -112,6 +112,7 @@ export function AppointmentsManager() {
     const q = search.toLowerCase()
     return appointments.filter((a) =>
       a.customerId?.name?.toLowerCase().includes(q) ||
+      a.customerId?.phone?.includes(q) ||
       a.serviceId?.name?.he?.toLowerCase().includes(q) ||
       a.serviceId?.name?.en?.toLowerCase().includes(q)
     )
@@ -222,7 +223,14 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
             {showDate && <p className="text-xs text-ink/40 mt-0.5">{format(new Date(a.startTime), 'd/M')}</p>}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="font-semibold text-ink truncate">{a.customerId?.name ?? 'לא ידוע'}</p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="font-semibold text-ink">{a.customerId?.name ?? 'לא ידוע'}</p>
+              {a.customerId?.phone && (
+                <a href={`tel:${a.customerId.phone}`} className="text-xs text-ink/50 hover:text-gold transition-colors font-mono" dir="ltr">
+                  {a.customerId.phone}
+                </a>
+              )}
+            </div>
             <p className="text-sm text-ink/60 truncate">
               {a.serviceId?.name?.he ?? 'שירות'}
               <span className="text-ink/40"> · ₪{a.serviceId?.priceIls} · {a.serviceId?.durationMinutes} דק׳</span>
