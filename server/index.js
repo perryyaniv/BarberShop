@@ -1,3 +1,4 @@
+process.env.TZ = 'Asia/Jerusalem'; // All date operations use Israel time
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -24,7 +25,7 @@ app.use('/api/otp', otpRoutes);
 app.use('/api', publicRoutes);
 app.use('/api/cron', cronRoutes);
 
-// SMS reminders at 07:00 and 17:00 UTC
+// SMS reminders at 07:00 and 17:00 Israel time
 cron.schedule('0 7,17 * * *', async () => {
   try {
     const { addHours, format } = require('date-fns');
