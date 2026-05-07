@@ -1,0 +1,129 @@
+{
+  "nav": {
+    "home": "בית",
+    "about": "אודות",
+    "services": "שירותים",
+    "gallery": "גלריה",
+    "contact": "צור קשר",
+    "book": "הזמן תור",
+    "adminPanel": "פאנל ניהול"
+  },
+  "hero": {
+    "tagline": "חוויית ספרות מקצועית",
+    "subtitle": "תספורות, עיצוב זקן ועוד — בסביבה נעימה ומקצועית",
+    "bookNow": "הזמן תור עכשיו",
+    "viewServices": "לצפייה בשירותים"
+  },
+  "about": {
+    "title": "אודות",
+    "ourStory": "הסיפור שלנו",
+    "openingHours": "שעות פתיחה",
+    "findUs": "איך מגיעים",
+    "contact": "צור קשר",
+    "days": {
+      "0": "ראשון",
+      "1": "שני",
+      "2": "שלישי",
+      "3": "רביעי",
+      "4": "חמישי",
+      "5": "שישי",
+      "6": "שבת"
+    },
+    "closed": "סגור"
+  },
+  "services": {
+    "title": "השירותים שלנו",
+    "subtitle": "כל הטיפולים שאתה צריך במקום אחד",
+    "categories": {
+      "haircut": "תספורות",
+      "beard": "זקן",
+      "combo": "חבילות",
+      "other": "נוספות"
+    },
+    "duration": "דק'",
+    "bookService": "הזמן שירות זה"
+  },
+  "gallery": {
+    "title": "גלריה",
+    "subtitle": "מבחר עבודות שלנו"
+  },
+  "footer": {
+    "rights": "כל הזכויות שמורות",
+    "address": "כתובת",
+    "phone": "טלפון",
+    "email": "אימייל",
+    "followUs": "עקבו אחרינו"
+  },
+  "booking": {
+    "title": "הזמנת תור",
+    "steps": {
+      "service": "בחירת שירות",
+      "date": "בחירת תאריך",
+      "time": "בחירת שעה",
+      "details": "פרטים אישיים",
+      "verify": "אימות טלפון",
+      "confirm": "אישור",
+      "success": "הזמנה בוצעה"
+    },
+    "selectService": "בחר שירות",
+    "selectDate": "בחר תאריך",
+    "selectTime": "בחר שעה",
+    "yourDetails": "הפרטים שלך",
+    "name": "שם מלא",
+    "phone": "מספר טלפון",
+    "notes": "הערות (אופציונלי)",
+    "notesPlaceholder": "כל מידע נוסף שתרצה לשתף",
+    "verifyPhone": "אמת מספר טלפון",
+    "otpSent": "קוד אימות נשלח ל-{{phone}}",
+    "enterOtp": "הכנס קוד אימות",
+    "resendOtp": "שלח קוד חדש",
+    "resendIn": "ניתן לשלוח שוב בעוד {{seconds}} שניות",
+    "confirmBooking": "אישור הזמנה",
+    "bookingDetails": "פרטי ההזמנה",
+    "back": "חזרה",
+    "next": "הבא",
+    "confirm": "אשר הזמנה",
+    "successTitle": "ההזמנה בוצעה בהצלחה!",
+    "successMessage": "תור נקבע ל-{{service}} בתאריך {{date}} בשעה {{time}}",
+    "addToCalendar": "הוסף ליומן",
+    "cancelBooking": "בטל הזמנה",
+    "noSlotsAvailable": "אין תורים פנויים ביום זה",
+    "slotUnavailable": "השעה שנבחרה אינה פנויה יותר. אנא בחר שעה אחרת.",
+    "phoneFormat": "הכנס מספר בפורמט ישראלי (0XX-XXXXXXX)",
+    "otpExpired": "הקוד פג תוקף. אנא בקש קוד חדש.",
+    "otpInvalid": "קוד שגוי. נסה שוב.",
+    "otpMaxAttempts": "מספר הניסיונות המרבי הגיע. אנא בקש קוד חדש."
+  },
+  "admin": {
+    "login": {
+      "title": "כניסה לפאנל ניהול",
+      "username": "שם משתמש",
+      "password": "סיסמה",
+      "signIn": "כניסה",
+      "error": "שם משתמש או סיסמה שגויים"
+    },
+    "dashboard": { "title": "לוח בקרה" },
+    "appointments": { "title": "ניהול תורים" },
+    "services": { "title": "ניהול שירותים" },
+    "hours": { "title": "שעות פעילות" },
+    "blocked": { "title": "חסימת זמנים" },
+    "customers": { "title": "לקוחות" }
+  },
+  "common": {
+    "save": "שמור",
+    "cancel": "בטל",
+    "delete": "מחק",
+    "edit": "ערוך",
+    "close": "סגור",
+    "loading": "טוען...",
+    "error": "שגיאה",
+    "success": "בוצע בהצלחה",
+    "confirm": "אשר",
+    "yes": "כן",
+    "no": "לא",
+    "back": "חזרה",
+    "next": "הבא",
+    "minutes": "דקות",
+    "currency": "₪"
+  }
+}

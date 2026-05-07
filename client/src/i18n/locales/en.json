@@ -1,0 +1,129 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "gallery": "Gallery",
+    "contact": "Contact",
+    "book": "Book Now",
+    "adminPanel": "Admin Panel"
+  },
+  "hero": {
+    "tagline": "Professional Barbershop Experience",
+    "subtitle": "Haircuts, beard styling, and more — in a welcoming and professional environment",
+    "bookNow": "Book an Appointment",
+    "viewServices": "View Services"
+  },
+  "about": {
+    "title": "About",
+    "ourStory": "Our Story",
+    "openingHours": "Opening Hours",
+    "findUs": "Find Us",
+    "contact": "Contact",
+    "days": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    },
+    "closed": "Closed"
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Everything you need, all in one place",
+    "categories": {
+      "haircut": "Haircuts",
+      "beard": "Beard",
+      "combo": "Combos",
+      "other": "Other"
+    },
+    "duration": "min",
+    "bookService": "Book This Service"
+  },
+  "gallery": {
+    "title": "Gallery",
+    "subtitle": "A selection of our work"
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "followUs": "Follow Us"
+  },
+  "booking": {
+    "title": "Book an Appointment",
+    "steps": {
+      "service": "Choose Service",
+      "date": "Choose Date",
+      "time": "Choose Time",
+      "details": "Your Details",
+      "verify": "Verify Phone",
+      "confirm": "Confirm",
+      "success": "Booked!"
+    },
+    "selectService": "Select a service",
+    "selectDate": "Select a date",
+    "selectTime": "Select a time",
+    "yourDetails": "Your Details",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "notes": "Notes (optional)",
+    "notesPlaceholder": "Any additional information you'd like to share",
+    "verifyPhone": "Verify Phone Number",
+    "otpSent": "A verification code was sent to {{phone}}",
+    "enterOtp": "Enter verification code",
+    "resendOtp": "Resend code",
+    "resendIn": "Resend in {{seconds}}s",
+    "confirmBooking": "Confirm Booking",
+    "bookingDetails": "Booking Details",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm Booking",
+    "successTitle": "Booking Confirmed!",
+    "successMessage": "Your appointment for {{service}} is scheduled for {{date}} at {{time}}",
+    "addToCalendar": "Add to Calendar",
+    "cancelBooking": "Cancel Booking",
+    "noSlotsAvailable": "No available slots on this day",
+    "slotUnavailable": "This time slot is no longer available. Please choose another.",
+    "phoneFormat": "Enter Israeli phone number (0XX-XXXXXXX)",
+    "otpExpired": "Code expired. Please request a new one.",
+    "otpInvalid": "Invalid code. Please try again.",
+    "otpMaxAttempts": "Maximum attempts reached. Please request a new code."
+  },
+  "admin": {
+    "login": {
+      "title": "Admin Panel Login",
+      "username": "Username",
+      "password": "Password",
+      "signIn": "Sign In",
+      "error": "Invalid username or password"
+    },
+    "dashboard": { "title": "Dashboard" },
+    "appointments": { "title": "Appointment Management" },
+    "services": { "title": "Service Management" },
+    "hours": { "title": "Working Hours" },
+    "blocked": { "title": "Blocked Times" },
+    "customers": { "title": "Customers" }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "next": "Next",
+    "minutes": "minutes",
+    "currency": "₪"
+  }
+}

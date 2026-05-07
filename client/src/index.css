@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@config "../tailwind.config.js";
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream text-ink;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  [dir="rtl"] body,
+  [dir="rtl"] {
+    font-family: 'Heebo', sans-serif;
+  }
+
+  [dir="ltr"] body,
+  [dir="ltr"] {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
