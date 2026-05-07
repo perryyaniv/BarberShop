@@ -26,7 +26,11 @@ export function AboutSection({ shop, workingHours }) {
               />
               <h3 className="text-xl font-semibold text-charcoal">{t('about.ourStory')}</h3>
             </div>
-            <p className="text-ink/70 leading-relaxed text-base">{description}</p>
+            <p className="text-ink/70 leading-relaxed text-base">
+              {description.split(/(?<=\.)\s+/).map((sentence, i, arr) => (
+                <span key={i}>{sentence}{i < arr.length - 1 && <br />}</span>
+              ))}
+            </p>
             <div className="mt-8 space-y-4">
               {shop?.address && (
                 <div className="flex items-start gap-3">
