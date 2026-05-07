@@ -7,8 +7,8 @@ import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import api from '../lib/api'
 
-// Accepts: 05X-XXXXXXX (exactly)
-const PHONE_REGEX = /^05[0-9]-\d{7}$/
+// Accepts: 05XXXXXXXXX (10 digits, no hyphen)
+const PHONE_REGEX = /^05[0-9]\d{7}$/
 
 export function CustomerLoginPage() {
   const { customer, login, logout } = useCustomer()
@@ -39,7 +39,7 @@ export function CustomerLoginPage() {
     }
 
     if (!PHONE_REGEX.test(phone.trim())) {
-      setError('מספר טלפון לא תקין. הכנס בפורמט 05X-XXXXXXX (לדוגמה: 050-1234567)')
+      setError('מספר טלפון לא תקין. הכנס 10 ספרות המתחילות ב-05')
       return
     }
 
@@ -136,12 +136,12 @@ export function CustomerLoginPage() {
                 type="tel"
                 value={form.phone}
                 onChange={set('phone')}
-                placeholder="050-1234567"
+                placeholder="0501234567"
                 required
                 dir="ltr"
                 autoComplete="tel"
               />
-              <p className="text-xs text-ink/40">פורמט: 05X-XXXXXXX</p>
+              <p className="text-xs text-ink/40">פורמט: 05XXXXXXXXX (10 ספרות)</p>
             </div>
 
             {error && (
