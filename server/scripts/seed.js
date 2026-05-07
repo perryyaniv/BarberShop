@@ -27,7 +27,6 @@ async function main() {
     galleryUrls: [],
     socialLinks: {
       instagram: 'https://www.instagram.com/rp_hairstyles_?igsh=cWF4djZsYnU4cnRp&utm_source=qr',
-      facebook: 'https://facebook.com/barbershop',
     },
   });
   console.log('Shop seeded');

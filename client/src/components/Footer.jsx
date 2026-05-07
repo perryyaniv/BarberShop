@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from './LanguageSwitcher'
-import { Scissors, Instagram, Facebook, Phone, Mail, MapPin } from 'lucide-react'
+import { Scissors, Instagram, Phone, Mail, MapPin } from 'lucide-react'
 
 export function Footer({ shop }) {
   const { t, i18n } = useTranslation()
@@ -47,20 +47,13 @@ export function Footer({ shop }) {
           </div>
 
           <div>
-            {(shop?.socialLinks?.instagram || shop?.socialLinks?.facebook) && (
+            {shop?.socialLinks?.instagram && (
               <>
                 <h4 className="font-semibold text-gold mb-4">{t('footer.followUs')}</h4>
                 <div className="flex gap-4">
-                  {shop.socialLinks.instagram && (
-                    <a href={shop.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-gold transition-colors">
-                      <Instagram className="w-6 h-6" />
-                    </a>
-                  )}
-                  {shop.socialLinks.facebook && (
-                    <a href={shop.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-gold transition-colors">
-                      <Facebook className="w-6 h-6" />
-                    </a>
-                  )}
+                  <a href={shop.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-gold transition-colors">
+                    <Instagram className="w-6 h-6" />
+                  </a>
                 </div>
               </>
             )}
