@@ -1,5 +1,5 @@
 const express = require('express');
-const { addMinutes, parseISO, setHours, setMinutes } = require('date-fns');
+const { addMinutes, parseISO, setHours, setMinutes, isBefore } = require('date-fns');
 const { connectDB } = require('../lib/db');
 const Appointment = require('../models/Appointment');
 const Customer = require('../models/Customer');
@@ -57,6 +57,10 @@ router.post('/', async (req, res) => {
     const [hour, minute] = startTime.split(':').map(Number);
     const startDatetime = setMinutes(setHours(parseISO(date), hour), minute);
     const endDatetime = addMinutes(startDatetime, service.durationMinutes);
+
+    if (isBefore(startDatetime, new Date())) {
+      return res.status(400).json({ error: 'past_time' });
+    }
 
     const available = await checkSlotAvailable(startDatetime, endDatetime);
     if (!available) {

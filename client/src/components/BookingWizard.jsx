@@ -73,6 +73,15 @@ export function BookingWizard({ services }) {
 
   async function submitBooking() {
     if (!selectedService || !selectedDate || !selectedTime) return
+
+    const slotDatetime = new Date(`${selectedDate}T${selectedTime}:00`)
+    if (isBefore(slotDatetime, new Date())) {
+      toast({ variant: 'destructive', title: 'לא ניתן להזמין לשעה שכבר עברה' })
+      setSelectedTime('')
+      loadSlots(selectedDate, selectedService._id)
+      return
+    }
+
     setSubmitting(true)
     try {
       const { data } = await api.post('/api/appointments', {
@@ -86,7 +95,12 @@ export function BookingWizard({ services }) {
       setAppointmentId(data.appointmentId)
       setStep(5)
     } catch (err) {
-      if (err.response?.data?.error === 'slot_taken') {
+      if (err.response?.data?.error === 'past_time') {
+        toast({ variant: 'destructive', title: 'לא ניתן להזמין לשעה שכבר עברה' })
+        setSelectedTime('')
+        setStep(2)
+        loadSlots(selectedDate, selectedService._id)
+      } else if (err.response?.data?.error === 'slot_taken') {
         toast({ variant: 'destructive', title: t('booking.slotUnavailable') })
         setStep(2)
         loadSlots(selectedDate, selectedService._id)
