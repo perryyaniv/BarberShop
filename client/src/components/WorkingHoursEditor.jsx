@@ -21,12 +21,24 @@ const INTERVAL_OPTIONS = [
   { value: 60, label: 'שעה' },
 ]
 
+const MIN_DAYS_OPTIONS = [
+  { value: 0,  label: 'ללא הגבלה' },
+  { value: 1,  label: 'יום אחד' },
+  { value: 2,  label: 'יומיים' },
+  { value: 3,  label: '3 ימים' },
+  { value: 7,  label: 'שבוע' },
+  { value: 14, label: 'שבועיים' },
+  { value: 30, label: 'חודש' },
+]
+
 export function WorkingHoursEditor() {
   const [hours, setHours] = useState(DEFAULT_HOURS)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(null)
   const [slotInterval, setSlotInterval] = useState(30)
   const [savingInterval, setSavingInterval] = useState(false)
+  const [minDays, setMinDays] = useState(0)
+  const [savingMinDays, setSavingMinDays] = useState(false)
 
   async function load() {
     setLoading(true)
@@ -37,6 +49,7 @@ export function WorkingHoursEditor() {
       ])
       if (hoursRes.data.hours?.length > 0) setHours(hoursRes.data.hours)
       setSlotInterval(settingsRes.data.slotIntervalMinutes ?? 30)
+      setMinDays(settingsRes.data.minDaysBetweenAppointments ?? 0)
     } finally {
       setLoading(false)
     }
@@ -76,6 +89,18 @@ export function WorkingHoursEditor() {
     }
   }
 
+  async function saveMinDays() {
+    setSavingMinDays(true)
+    try {
+      await api.put('/api/admin/shop-settings', { minDaysBetweenAppointments: minDays })
+      toast({ variant: 'success', title: 'הגבלת ימים עודכנה' })
+    } catch {
+      toast({ variant: 'destructive', title: 'שגיאה בשמירה' })
+    } finally {
+      setSavingMinDays(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <Toaster />
@@ -101,6 +126,32 @@ export function WorkingHoursEditor() {
               </select>
               <Button size="sm" variant="gold" onClick={saveInterval} disabled={savingInterval}>
                 {savingInterval ? 'שומר...' : 'שמור'}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Min days between appointments */}
+      <Card>
+        <CardContent className="py-4 px-5">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex-1">
+              <p className="font-semibold text-ink">מינימום ימים בין תורים ללקוח</p>
+              <p className="text-sm text-ink/50 mt-0.5">כמה ימים מינימום בין תור לתור עבור אותו לקוח</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <select
+                value={minDays}
+                onChange={(e) => setMinDays(Number(e.target.value))}
+                className="h-10 rounded-md border border-ink/20 bg-white px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-gold"
+              >
+                {MIN_DAYS_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+              <Button size="sm" variant="gold" onClick={saveMinDays} disabled={savingMinDays}>
+                {savingMinDays ? 'שומר...' : 'שמור'}
               </Button>
             </div>
           </div>

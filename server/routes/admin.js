@@ -213,22 +213,60 @@ router.get('/customers', async (req, res) => {
   res.json({ customers: result });
 });
 
+// Appointments in a time range (used for blocked-slot conflict check)
+router.get('/appointments-in-range', async (req, res) => {
+  await connectDB();
+  const { from, to } = req.query;
+  if (!from || !to) return res.status(400).json({ error: 'from and to required' });
+  const appointments = await Appointment.find({
+    startTime: { $lt: new Date(to) },
+    endTime: { $gt: new Date(from) },
+    status: { $in: ['confirmed', 'pending_verification'] },
+  })
+    .populate('serviceId', 'name')
+    .populate('customerId', 'name phone')
+    .lean();
+  res.json({ appointments });
+});
+
 // Shop settings
 router.get('/shop-settings', async (req, res) => {
   await connectDB();
   const shop = await Shop.findOne().lean();
-  res.json({ slotIntervalMinutes: shop?.slotIntervalMinutes ?? 30 });
+  res.json({
+    slotIntervalMinutes: shop?.slotIntervalMinutes ?? 30,
+    minDaysBetweenAppointments: shop?.minDaysBetweenAppointments ?? 0,
+  });
 });
 
 router.put('/shop-settings', async (req, res) => {
-  const { slotIntervalMinutes } = req.body;
-  const valid = [10, 15, 20, 30, 45, 60];
-  if (!valid.includes(slotIntervalMinutes)) {
-    return res.status(400).json({ error: 'ערך לא תקין' });
+  const { slotIntervalMinutes, minDaysBetweenAppointments } = req.body;
+  const update = {};
+
+  if (slotIntervalMinutes !== undefined) {
+    const valid = [10, 15, 20, 30, 45, 60];
+    if (!valid.includes(slotIntervalMinutes)) {
+      return res.status(400).json({ error: 'ערך לא תקין עבור הפרש זמנים' });
+    }
+    update.slotIntervalMinutes = slotIntervalMinutes;
   }
+
+  if (minDaysBetweenAppointments !== undefined) {
+    const v = Number(minDaysBetweenAppointments);
+    if (!Number.isInteger(v) || v < 0 || v > 365) {
+      return res.status(400).json({ error: 'ערך לא תקין עבור מינימום ימים בין תורים' });
+    }
+    update.minDaysBetweenAppointments = v;
+  }
+
+  if (Object.keys(update).length === 0) return res.status(400).json({ error: 'לא נמסרו הגדרות לעדכון' });
+
   await connectDB();
-  const shop = await Shop.findOneAndUpdate({}, { slotIntervalMinutes }, { new: true, upsert: true }).lean();
-  res.json({ slotIntervalMinutes: shop.slotIntervalMinutes });
+  const shop = await Shop.findOneAndUpdate({}, update, { new: true, upsert: true }).lean();
+  res.json({
+    slotIntervalMinutes: shop.slotIntervalMinutes,
+    minDaysBetweenAppointments: shop.minDaysBetweenAppointments,
+  });
 });
 
 module.exports = router;

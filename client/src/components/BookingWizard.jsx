@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCustomer } from '../context/CustomerContext'
-import { format, addDays, startOfToday, parseISO, isBefore } from 'date-fns'
+import { format, addDays, startOfToday, parseISO, isBefore, isToday } from 'date-fns'
 import { he as heLocale, enUS } from 'date-fns/locale'
-import { ChevronLeft, ChevronRight, Check, Download, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
 import { BookingStepper } from './BookingStepper'
 import { TimeSlotGrid } from './TimeSlotGrid'
 import { Button } from './ui/button'
@@ -29,8 +29,9 @@ export function BookingWizard({ services }) {
   const [slotsLoading, setSlotsLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [inactiveDays, setInactiveDays] = useState(new Set())
+  const [daysStatus, setDaysStatus] = useState({})   // dateStr → boolean
+  const [daysLoading, setDaysLoading] = useState(false)
 
-  // steps: 0=service, 1=date, 2=time, 3=confirm, 4=success
   const stepLabels = [
     t('booking.steps.service'),
     t('booking.steps.date'),
@@ -41,25 +42,56 @@ export function BookingWizard({ services }) {
   const steps = stepLabels.map((label, i) => ({ label, index: i }))
 
   useEffect(() => {
-    api.get('/api/working-hours').then(({ data }) => {
+    const init = async () => {
+      const [hoursRes, settingsRes] = await Promise.all([
+        api.get('/api/working-hours').catch(() => ({ data: {} })),
+        api.get('/api/appointments/settings').catch(() => ({ data: {} })),
+      ])
       const inactive = new Set(
-        (data.hours ?? []).filter((h) => !h.isActive).map((h) => h.dayOfWeek)
+        (hoursRes.data.hours ?? []).filter((h) => !h.isActive).map((h) => h.dayOfWeek)
       )
       setInactiveDays(inactive)
-    }).catch(() => {})
 
-    if (customer?.phone) {
-      api.get(`/api/appointments/my?phone=${encodeURIComponent(customer.phone)}`).then(({ data }) => {
-        const hasActive = (data.appointments ?? []).some(
-          (a) => ['confirmed', 'pending_verification'].includes(a.status) && new Date(a.startTime) >= new Date()
-        )
-        if (hasActive) {
-          toast({ variant: 'destructive', title: 'כבר קיים תור פעיל על שמך. בטל אותו לפני הזמנה חדשה.' })
-          setTimeout(() => navigate('/my-appointments'), 1800)
+      if (customer?.phone) {
+        const minDays = settingsRes.data.minDaysBetweenAppointments ?? 0
+        if (minDays === 0) {
+          // Only redirect when there's no gap restriction
+          api.get(`/api/appointments/my?phone=${encodeURIComponent(customer.phone)}`).then(({ data }) => {
+            const hasActive = (data.appointments ?? []).some(
+              (a) => ['confirmed', 'pending_verification'].includes(a.status) && new Date(a.startTime) >= new Date()
+            )
+            if (hasActive) {
+              toast({ variant: 'destructive', title: 'כבר קיים תור פעיל על שמך. בטל אותו לפני הזמנה חדשה.' })
+              setTimeout(() => navigate('/my-appointments'), 1800)
+            }
+          }).catch(() => {})
         }
-      }).catch(() => {})
+      }
+    }
+    init()
+  }, [])
+
+  const loadDaysAvailability = useCallback(async (serviceId) => {
+    setDaysLoading(true)
+    try {
+      const from = format(startOfToday(), 'yyyy-MM-dd')
+      const to = format(addDays(startOfToday(), 27), 'yyyy-MM-dd')
+      const { data } = await api.get(
+        `/api/appointments/days-availability?serviceId=${serviceId}&from=${from}&to=${to}`
+      )
+      setDaysStatus(data.availability ?? {})
+    } catch {
+      // fallback: all days appear available
+    } finally {
+      setDaysLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    if (step === 1 && selectedService) {
+      loadDaysAvailability(selectedService._id)
+    }
+  }, [step, selectedService, loadDaysAvailability])
 
   const loadSlots = useCallback(async (date, serviceId) => {
     setSlotsLoading(true)
@@ -120,26 +152,6 @@ export function BookingWizard({ services }) {
     }
   }
 
-  function downloadIcs() {
-    if (!selectedService || !selectedDate || !selectedTime) return
-    const [h, m] = selectedTime.split(':').map(Number)
-    const start = parseISO(selectedDate)
-    start.setHours(h, m, 0)
-    const end = new Date(start.getTime() + selectedService.durationMinutes * 60000)
-    const fmt = (d) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
-    const ics = [
-      'BEGIN:VCALENDAR', 'VERSION:2.0', 'BEGIN:VEVENT',
-      `DTSTART:${fmt(start)}`, `DTEND:${fmt(end)}`,
-      `SUMMARY:${selectedService.name[locale]}`,
-      'END:VEVENT', 'END:VCALENDAR',
-    ].join('\r\n')
-    const blob = new Blob([ics], { type: 'text/calendar' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url; a.download = 'appointment.ics'; a.click()
-    URL.revokeObjectURL(url)
-  }
-
   const formattedDate = selectedDate
     ? format(parseISO(selectedDate), 'EEEE, d MMMM yyyy', { locale: dateLocale })
     : ''
@@ -189,24 +201,45 @@ export function BookingWizard({ services }) {
       {step === 1 && (
         <div className="space-y-4">
           <h2 className="font-semibold text-lg text-ink">{t('booking.selectDate')}</h2>
+          {daysLoading && (
+            <p className="text-center text-ink/40 text-sm py-2">{t('common.loading')}</p>
+          )}
           <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
             {Array.from({ length: 28 }).map((_, i) => {
               const date = addDays(startOfToday(), i)
               const dateStr = format(date, 'yyyy-MM-dd')
+
               if (inactiveDays.has(date.getDay())) return null
+
+              const isFull = !daysLoading && daysStatus[dateStr] === false
+              const todayEnded = isFull && isToday(date)
+
+              // Hide today if it has no more available slots
+              if (todayEnded) return null
+
               const isSelected = selectedDate === dateStr
+
               return (
                 <button
                   key={dateStr}
-                  onClick={() => setSelectedDate(dateStr)}
+                  disabled={isFull}
+                  onClick={() => !isFull && setSelectedDate(dateStr)}
                   className={cn(
                     'flex flex-col items-center py-2 px-1 rounded-lg border text-sm transition-all',
-                    isSelected ? 'bg-gold border-gold text-charcoal font-bold shadow-md' : 'border-ink/15 hover:border-gold/50 bg-white text-ink'
+                    isSelected
+                      ? 'bg-gold border-gold text-charcoal font-bold shadow-md'
+                      : isFull
+                      ? 'border-ink/10 bg-ink/5 text-ink/30 cursor-not-allowed'
+                      : 'border-ink/15 hover:border-gold/50 bg-white text-ink'
                   )}
                 >
                   <span className="text-xs opacity-60">{format(date, 'EEE', { locale: dateLocale })}</span>
                   <span className="font-semibold">{format(date, 'd')}</span>
-                  <span className="text-xs opacity-50">{format(date, 'MMM', { locale: dateLocale })}</span>
+                  {isFull ? (
+                    <span className="text-xs text-red-400 font-medium">מלא</span>
+                  ) : (
+                    <span className="text-xs opacity-50">{format(date, 'MMM', { locale: dateLocale })}</span>
+                  )}
                 </button>
               )
             })}
@@ -270,7 +303,7 @@ export function BookingWizard({ services }) {
         </div>
       )}
 
-      {/* Step 4: Success */}
+      {/* Step 4: Success — only show confirmation, no extra actions */}
       {step === 4 && selectedService && (
         <div className="text-center space-y-6 py-4">
           <div className="flex justify-center">
@@ -284,20 +317,9 @@ export function BookingWizard({ services }) {
               {t('booking.successMessage', { service: selectedService.name[locale], date: formattedDate, time: selectedTime })}
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button variant="gold" onClick={downloadIcs}>
-              <Download className="w-4 h-4 me-2" />{t('booking.addToCalendar')}
-            </Button>
-            {appointmentId && (
-              <Button variant="outline" onClick={async () => {
-                if (!confirm('לבטל את התור?')) return
-                await api.post(`/api/appointments/${appointmentId}/cancel`)
-                toast({ title: 'התור בוטל' })
-              }}>
-                <X className="w-4 h-4 me-2" />{t('booking.cancelBooking')}
-              </Button>
-            )}
-          </div>
+          <Button variant="gold" onClick={() => navigate('/my-appointments')}>
+            {t('booking.viewMyAppointments') || 'התורים שלי'}
+          </Button>
         </div>
       )}
     </div>

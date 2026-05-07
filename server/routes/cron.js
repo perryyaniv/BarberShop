@@ -7,6 +7,20 @@ const { sendSms, formatReminderMessage } = require('../lib/sms');
 
 const router = express.Router();
 
+router.get('/auto-complete', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  await connectDB();
+  const cutoff = new Date(Date.now() - 60 * 60 * 1000);
+  const result = await Appointment.updateMany(
+    { startTime: { $lt: cutoff }, status: 'confirmed' },
+    { $set: { status: 'completed' } }
+  );
+  res.json({ completed: result.modifiedCount });
+});
+
 router.get('/reminders', async (req, res) => {
   const authHeader = req.headers.authorization;
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {

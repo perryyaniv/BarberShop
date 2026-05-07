@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { format, parseISO } from 'date-fns'
 import { he as heLocale } from 'date-fns/locale'
-import { Plus, Trash2, CalendarOff, Clock } from 'lucide-react'
+import { Plus, Trash2, CalendarOff, Clock, AlertTriangle } from 'lucide-react'
 import { Card, CardContent } from '../ui/card'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
@@ -24,6 +24,9 @@ export function BlockedSlotsManager() {
   const [showForm, setShowForm] = useState(false)
   const [mode, setMode] = useState('fullDay')
   const [form, setForm] = useState(emptyForm)
+  const [conflicts, setConflicts] = useState(null)   // null = no modal; array = show modal
+  const [pendingBlock, setPendingBlock] = useState(null)
+  const [saving, setSaving] = useState(false)
 
   async function load() {
     setLoading(true)
@@ -41,29 +44,54 @@ export function BlockedSlotsManager() {
     return (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
   }
 
-  async function create() {
-    let startDatetime, endDatetime
-
+  function buildDatetimes() {
     if (mode === 'fullDay') {
-      startDatetime = new Date(`${form.date}T00:00:00`).toISOString()
-      endDatetime   = new Date(`${form.endDate || form.date}T23:59:59`).toISOString()
-    } else {
-      startDatetime = new Date(`${form.date}T${form.startTime}:00`).toISOString()
-      endDatetime   = new Date(`${form.date}T${form.endTime}:00`).toISOString()
+      return {
+        startDatetime: new Date(`${form.date}T00:00:00`).toISOString(),
+        endDatetime:   new Date(`${form.endDate || form.date}T23:59:59`).toISOString(),
+      }
     }
+    return {
+      startDatetime: new Date(`${form.date}T${form.startTime}:00`).toISOString(),
+      endDatetime:   new Date(`${form.date}T${form.endTime}:00`).toISOString(),
+    }
+  }
 
+  async function checkAndCreate() {
+    const { startDatetime, endDatetime } = buildDatetimes()
     try {
-      const res = await api.post('/api/admin/blocked-slots', { startDatetime, endDatetime, reason: form.reason })
+      const { data } = await api.get(
+        `/api/admin/appointments-in-range?from=${encodeURIComponent(startDatetime)}&to=${encodeURIComponent(endDatetime)}`
+      )
+      if (data.appointments?.length > 0) {
+        setPendingBlock({ startDatetime, endDatetime, reason: form.reason })
+        setConflicts(data.appointments)
+        return
+      }
+      await doCreate(startDatetime, endDatetime, form.reason)
+    } catch {
+      toast({ variant: 'destructive', title: 'שגיאה בבדיקת התורים' })
+    }
+  }
+
+  async function doCreate(startDatetime, endDatetime, reason) {
+    setSaving(true)
+    try {
+      const res = await api.post('/api/admin/blocked-slots', { startDatetime, endDatetime, reason })
       if (res.status === 201) {
         toast({ variant: 'success', title: 'חסימה נוספה' })
         setShowForm(false)
         setForm(emptyForm)
+        setConflicts(null)
+        setPendingBlock(null)
         load()
       } else {
         toast({ variant: 'destructive', title: 'שגיאה בהוספה' })
       }
     } catch {
       toast({ variant: 'destructive', title: 'שגיאה בהוספה' })
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -102,6 +130,52 @@ export function BlockedSlotsManager() {
   return (
     <div className="space-y-6">
       <Toaster />
+
+      {/* Conflict override modal */}
+      {conflicts && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" dir="rtl">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-amber-100">
+                <AlertTriangle className="w-5 h-5 text-amber-600" />
+              </div>
+              <h3 className="font-bold text-charcoal text-lg">קיימים תורים בזמן זה</h3>
+            </div>
+            <p className="text-sm text-ink/60">
+              הזמנים הבאים חופפים לחסימה המבוקשת. מומלץ לבטל אותם תחילה:
+            </p>
+            <div className="space-y-2 max-h-52 overflow-y-auto">
+              {conflicts.map((a) => (
+                <div key={a._id} className="bg-cream-warm rounded-lg p-3 text-sm">
+                  <p className="font-medium text-ink">{a.customerId?.name}</p>
+                  <p className="text-ink/50 text-xs">{a.customerId?.phone}</p>
+                  <p className="text-ink/60 text-xs mt-0.5" dir="ltr">
+                    {format(new Date(a.startTime), 'd/M/yyyy HH:mm')} — {a.serviceId?.name?.he}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-3 pt-1">
+              <Button
+                variant="ghost"
+                className="flex-1"
+                onClick={() => { setConflicts(null); setPendingBlock(null) }}
+              >
+                בטל
+              </Button>
+              <Button
+                variant="gold"
+                className="flex-1"
+                disabled={saving}
+                onClick={() => doCreate(pendingBlock.startDatetime, pendingBlock.endDatetime, pendingBlock.reason)}
+              >
+                {saving ? 'שומר...' : 'חסום בכל זאת'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-charcoal">חסימת זמנים</h1>
         <Button variant="gold" size="sm" onClick={() => { setShowForm(true); setForm(emptyForm) }}>
@@ -112,7 +186,6 @@ export function BlockedSlotsManager() {
       {showForm && (
         <Card>
           <CardContent className="py-6 px-5 space-y-5">
-            {/* Mode selector */}
             <div className="flex gap-2">
               {MODES.map(({ key, label, icon: Icon }) => (
                 <button
@@ -164,7 +237,9 @@ export function BlockedSlotsManager() {
             </div>
 
             <div className="flex gap-3">
-              <Button variant="gold" onClick={create} disabled={!isFormValid}>שמור</Button>
+              <Button variant="gold" onClick={checkAndCreate} disabled={!isFormValid || saving}>
+                {saving ? 'שומר...' : 'שמור'}
+              </Button>
               <Button variant="ghost" onClick={() => setShowForm(false)}>בטל</Button>
             </div>
           </CardContent>
