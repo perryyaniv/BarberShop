@@ -20,6 +20,7 @@ const ShopSchema = new mongoose.Schema(
       facebook: { type: String },
       whatsapp: { type: String },
     },
+    slotIntervalMinutes: { type: Number, default: 30 },
   },
   { timestamps: true }
 );

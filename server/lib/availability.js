@@ -5,8 +5,7 @@ const { connectDB } = require('./db');
 const WorkingHours = require('../models/WorkingHours');
 const BlockedSlot = require('../models/BlockedSlot');
 const Appointment = require('../models/Appointment');
-
-const SLOT_INTERVAL_MINUTES = 15;
+const Shop = require('../models/Shop');
 
 async function getAvailableSlots(dateStr, durationMinutes) {
   await connectDB();
@@ -14,8 +13,13 @@ async function getAvailableSlots(dateStr, durationMinutes) {
   const date = parseISO(dateStr);
   const dayOfWeek = date.getDay();
 
-  const workingHours = await WorkingHours.findOne({ dayOfWeek, isActive: true });
+  const [workingHours, shop] = await Promise.all([
+    WorkingHours.findOne({ dayOfWeek, isActive: true }),
+    Shop.findOne().lean(),
+  ]);
   if (!workingHours) return [];
+
+  const SLOT_INTERVAL_MINUTES = shop?.slotIntervalMinutes ?? 30;
 
   const dayStart = startOfDay(date);
   const dayEnd = endOfDay(date);

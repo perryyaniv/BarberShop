@@ -8,6 +8,7 @@ const Customer = require('../models/Customer');
 const Service = require('../models/Service');
 const BlockedSlot = require('../models/BlockedSlot');
 const WorkingHours = require('../models/WorkingHours');
+const Shop = require('../models/Shop');
 const { serviceSchema, blockedSlotSchema, walkInSchema } = require('../lib/validations');
 
 const router = express.Router();
@@ -210,6 +211,24 @@ router.get('/customers', async (req, res) => {
     lastVisit: countMap.get(c._id.toString())?.lastVisit ?? null,
   }));
   res.json({ customers: result });
+});
+
+// Shop settings
+router.get('/shop-settings', async (req, res) => {
+  await connectDB();
+  const shop = await Shop.findOne().lean();
+  res.json({ slotIntervalMinutes: shop?.slotIntervalMinutes ?? 30 });
+});
+
+router.put('/shop-settings', async (req, res) => {
+  const { slotIntervalMinutes } = req.body;
+  const valid = [10, 15, 20, 30, 45, 60];
+  if (!valid.includes(slotIntervalMinutes)) {
+    return res.status(400).json({ error: 'ערך לא תקין' });
+  }
+  await connectDB();
+  const shop = await Shop.findOneAndUpdate({}, { slotIntervalMinutes }, { new: true, upsert: true }).lean();
+  res.json({ slotIntervalMinutes: shop.slotIntervalMinutes });
 });
 
 module.exports = router;
