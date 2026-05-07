@@ -5,10 +5,8 @@ export function AboutSection({ shop, workingHours }) {
   const { t, i18n } = useTranslation()
   const locale = i18n.language
 
-  const description = shop?.description?.[locale]
-    ?? (locale === 'he'
-      ? 'ברוכים הבאים למרחב שבו יצירתיות פוגשת דיוק. רון פז, מעצב שיער בעל ניסיון עשיר, מזמין אתכם לחוויית טיפוח אישית המשלבת את הטרנדים הבינלאומיים המובילים עם התאמה מושלמת למבנה הפנים ולאורח החיים שלכם. כאן, כל תספורת היא אמנות וכל לקוח הוא במרכז.'
-      : "Professional men's barbershop — haircuts, beard styling, and more.")
+  const description = shop?.description?.he
+    ?? 'ברוכים הבאים למרחב שבו יצירתיות פוגשת דיוק. רון פז, מעצב שיער בעל ניסיון עשיר, מזמין אתכם לחוויית טיפוח אישית המשלבת את הטרנדים הבינלאומיים המובילים עם התאמה מושלמת למבנה הפנים ולאורח החיים שלכם. כאן, כל תספורת היא אמנות וכל לקוח הוא במרכז.'
 
   return (
     <section id="about" className="py-20 bg-cream-warm">

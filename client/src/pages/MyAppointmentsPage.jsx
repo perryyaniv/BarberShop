@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { format, isPast } from 'date-fns'
 import { he as heLocale } from 'date-fns/locale'
-import { CalendarX, CheckCircle, Clock, XCircle } from 'lucide-react'
+import { CalendarX, CheckCircle, Clock, XCircle, LogOut } from 'lucide-react'
 import { Navbar } from '../components/Navbar'
 import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
@@ -29,7 +29,7 @@ const STATUS_LABELS = {
 }
 
 export function MyAppointmentsPage() {
-  const { customer } = useCustomer()
+  const { customer, logout } = useCustomer()
   const navigate = useNavigate()
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
@@ -72,11 +72,20 @@ export function MyAppointmentsPage() {
       <Navbar />
       <Toaster />
       <main className="container mx-auto px-4 py-10 max-w-2xl">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-charcoal">התורים שלי</h1>
-          {customer && (
-            <p className="text-ink/50 text-sm mt-1">{customer.fullName} · {customer.phone}</p>
-          )}
+        <div className="mb-8 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-charcoal">התורים שלי</h1>
+            {customer && (
+              <p className="text-ink/50 text-sm mt-1">{customer.fullName} · {customer.phone}</p>
+            )}
+          </div>
+          <button
+            onClick={() => { logout(); navigate('/') }}
+            className="flex items-center gap-1.5 text-sm text-ink/40 hover:text-red-500 transition-colors pt-1"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>התנתקות</span>
+          </button>
         </div>
 
         {loading ? (

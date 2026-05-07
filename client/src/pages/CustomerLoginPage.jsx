@@ -5,6 +5,10 @@ import { useCustomer } from '../context/CustomerContext'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
+import api from '../lib/api'
+
+// Accepts: 05X-XXXXXXX (exactly)
+const PHONE_REGEX = /^05[0-9]-\d{7}$/
 
 export function CustomerLoginPage() {
   const { customer, login, logout } = useCustomer()
@@ -18,30 +22,56 @@ export function CustomerLoginPage() {
     phone: customer?.phone ?? '',
   })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   function set(field) {
     return (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     setError('')
 
-    const phone = form.phone.trim().replace(/[-\s]/g, '')
-    if (!/^0[5][0-9]{8}$/.test(phone) && !/^05[0-9]-?\d{7}$/.test(form.phone.trim())) {
-      if (!/^05\d{8}$/.test(phone)) {
-        setError('מספר טלפון לא תקין. הכנס מספר בפורמט 05X-XXXXXXX')
-        return
-      }
+    const { firstName, lastName, phone } = form
+    if (!firstName.trim() || !lastName.trim() || !phone.trim()) {
+      setError('יש למלא את כל השדות')
+      return
     }
 
-    login({
-      firstName: form.firstName.trim(),
-      lastName: form.lastName.trim(),
-      phone: form.phone.trim(),
-      fullName: `${form.firstName.trim()} ${form.lastName.trim()}`,
-    })
-    navigate(next, { replace: true })
+    if (!PHONE_REGEX.test(phone.trim())) {
+      setError('מספר טלפון לא תקין. הכנס בפורמט 05X-XXXXXXX (לדוגמה: 050-1234567)')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const { data } = await api.get('/api/appointments/customer-lookup', {
+        params: { phone: phone.trim() },
+      })
+
+      const resolvedName = data.found
+        ? { firstName: data.name.split(' ')[0], lastName: data.name.split(' ').slice(1).join(' ') || lastName.trim() }
+        : { firstName: firstName.trim(), lastName: lastName.trim() }
+
+      login({
+        firstName: resolvedName.firstName,
+        lastName: resolvedName.lastName,
+        phone: phone.trim(),
+        fullName: `${resolvedName.firstName} ${resolvedName.lastName}`,
+      })
+      navigate(next, { replace: true })
+    } catch {
+      // On API error fall back to entered details
+      login({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        phone: phone.trim(),
+        fullName: `${firstName.trim()} ${lastName.trim()}`,
+      })
+      navigate(next, { replace: true })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -111,6 +141,7 @@ export function CustomerLoginPage() {
                 dir="ltr"
                 autoComplete="tel"
               />
+              <p className="text-xs text-ink/40">פורמט: 05X-XXXXXXX</p>
             </div>
 
             {error && (
@@ -121,10 +152,10 @@ export function CustomerLoginPage() {
               type="submit"
               variant="gold"
               className="w-full"
-              disabled={!form.firstName.trim() || !form.lastName.trim() || !form.phone.trim()}
+              disabled={loading || !form.firstName.trim() || !form.lastName.trim() || !form.phone.trim()}
             >
               <Scissors className="w-4 h-4 me-2" />
-              {customer ? 'עדכן ועבור להזמנה' : 'כניסה והזמנת תור'}
+              {loading ? 'מאמת...' : customer ? 'עדכן ועבור להזמנה' : 'כניסה והזמנת תור'}
             </Button>
           </form>
         </div>

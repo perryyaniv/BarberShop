@@ -33,6 +33,7 @@ export function BookingWizard({ services }) {
   const [slots, setSlots] = useState([])
   const [slotsLoading, setSlotsLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [inactiveDays, setInactiveDays] = useState(new Set())
 
   // steps: 0=service, 1=date, 2=time, 3=details, 4=confirm, 5=success
   const stepLabels = [
@@ -44,6 +45,15 @@ export function BookingWizard({ services }) {
     t('booking.steps.success'),
   ]
   const steps = stepLabels.map((label, i) => ({ label, index: i }))
+
+  useEffect(() => {
+    api.get('/api/working-hours').then(({ data }) => {
+      const inactive = new Set(
+        (data.hours ?? []).filter((h) => !h.isActive).map((h) => h.dayOfWeek)
+      )
+      setInactiveDays(inactive)
+    }).catch(() => {})
+  }, [])
 
   const loadSlots = useCallback(async (date, serviceId) => {
     setSlotsLoading(true)
@@ -146,7 +156,7 @@ export function BookingWizard({ services }) {
                     {service.description?.[locale] && (
                       <p className="text-ink/50 text-sm mt-0.5 line-clamp-1">{service.description[locale]}</p>
                     )}
-                    <p className="text-ink/50 text-xs mt-1">{service.durationMinutes} min</p>
+                    <p className="text-ink/50 text-xs mt-1">{service.durationMinutes} דקות</p>
                   </div>
                   <span className="font-bold text-charcoal text-lg shrink-0">₪{service.priceIls}</span>
                 </div>
@@ -164,6 +174,7 @@ export function BookingWizard({ services }) {
             {Array.from({ length: 28 }).map((_, i) => {
               const date = addDays(startOfToday(), i)
               const dateStr = format(date, 'yyyy-MM-dd')
+              if (inactiveDays.has(date.getDay())) return null
               const isSelected = selectedDate === dateStr
               return (
                 <button
@@ -204,7 +215,7 @@ export function BookingWizard({ services }) {
           ) : slots.length === 0 ? (
             <p className="text-center text-ink/50 py-8">{t('booking.noSlotsAvailable')}</p>
           ) : (
-            <TimeSlotGrid slots={slots} selectedSlot={selectedTime} onSelect={setSelectedTime} />
+            <TimeSlotGrid slots={slots.filter((s) => s.available)} selectedSlot={selectedTime} onSelect={setSelectedTime} />
           )}
           <div className="flex justify-between pt-2">
             <Button variant="ghost" size="sm" onClick={() => setStep(1)}>
@@ -228,7 +239,7 @@ export function BookingWizard({ services }) {
                 id="name"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                placeholder={locale === 'he' ? 'ישראל ישראלי' : 'John Doe'}
+                placeholder="ישראל ישראלי"
                 autoComplete="name"
               />
             </div>
@@ -266,7 +277,7 @@ export function BookingWizard({ services }) {
             {notes && <SummaryRow label={t('booking.notes')} value={notes} />}
             <div className="border-t border-ink/10 pt-3 mt-3 flex justify-between font-bold text-charcoal">
               <span>₪{selectedService.priceIls}</span>
-              <span>{selectedService.durationMinutes} min</span>
+              <span>{selectedService.durationMinutes} דקות</span>
             </div>
           </div>
           <div className="flex justify-between">

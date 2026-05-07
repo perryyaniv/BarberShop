@@ -1,14 +1,14 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LanguageSwitcher } from './LanguageSwitcher'
 import { Button } from './ui/button'
-import { Menu, X, Scissors, CalendarDays, User } from 'lucide-react'
+import { Menu, X, Scissors, CalendarDays, User, LogOut } from 'lucide-react'
 import { useCustomer } from '../context/CustomerContext'
 
 export function Navbar() {
   const { t } = useTranslation()
-  const { customer } = useCustomer()
+  const { customer, logout } = useCustomer()
+  const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
@@ -17,6 +17,12 @@ export function Navbar() {
     { href: '/#gallery', label: t('nav.gallery') },
     { href: '/#contact', label: t('nav.contact') },
   ]
+
+  function handleLogout() {
+    logout()
+    setMenuOpen(false)
+    navigate('/')
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-charcoal/95 backdrop-blur-sm text-white shadow-md">
@@ -36,7 +42,6 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
           {customer ? (
             <>
               <Link to="/my-appointments" className="hidden md:flex items-center gap-1.5 text-sm text-white/70 hover:text-gold transition-colors">
@@ -49,10 +54,17 @@ export function Navbar() {
                   <span>{customer.firstName}</span>
                 </Button>
               </Link>
+              <button
+                onClick={handleLogout}
+                className="hidden md:flex p-1.5 text-white/50 hover:text-red-400 transition-colors"
+                title="התנתק"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </>
           ) : (
             <Link to="/login">
-              <Button variant="gold" size="sm">{t('nav.book')}</Button>
+              <Button variant="gold" size="sm">כניסה</Button>
             </Link>
           )}
           <button className="md:hidden p-2" onClick={() => setMenuOpen((v) => !v)} aria-label="Toggle menu">
@@ -78,9 +90,23 @@ export function Navbar() {
               <CalendarDays className="w-4 h-4" /> התורים שלי
             </Link>
           )}
-          <Link to={customer ? '/book' : '/login'} onClick={() => setMenuOpen(false)}>
-            <Button variant="gold" size="sm" className="mt-4 w-full">{t('nav.book')}</Button>
-          </Link>
+          {customer ? (
+            <>
+              <Link to="/book" onClick={() => setMenuOpen(false)}>
+                <Button variant="gold" size="sm" className="mt-4 w-full">{t('nav.book')}</Button>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="flex items-center justify-center gap-2 mt-3 w-full py-2 text-sm text-white/50 hover:text-red-400 transition-colors"
+              >
+                <LogOut className="w-4 h-4" /> התנתקות
+              </button>
+            </>
+          ) : (
+            <Link to="/login" onClick={() => setMenuOpen(false)}>
+              <Button variant="gold" size="sm" className="mt-4 w-full">כניסה</Button>
+            </Link>
+          )}
         </div>
       )}
     </header>

@@ -1,11 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { LanguageSwitcher } from './LanguageSwitcher'
 import { Scissors, Instagram, MessageCircle, Phone, MapPin } from 'lucide-react'
 
 export function Footer({ shop }) {
-  const { t, i18n } = useTranslation()
-  const locale = i18n.language
-  const shopName = shop?.name?.[locale] ?? 'BarberShop'
+  const { t } = useTranslation()
+  const shopName = shop?.name?.he ?? 'HairStyles RP'
   const year = new Date().getFullYear()
 
   return (
@@ -17,9 +15,7 @@ export function Footer({ shop }) {
               <Scissors className="w-5 h-5 text-gold" />
               <span className="font-bold text-lg text-gold">{shopName}</span>
             </div>
-            <p className="text-white/50 text-sm leading-relaxed">
-              {locale === 'he' ? 'ספרות מקצועית לגברים' : "Professional men's barbershop"}
-            </p>
+            <p className="text-white/50 text-sm leading-relaxed">ספרות מקצועית לגברים</p>
           </div>
 
           <div>
@@ -63,7 +59,6 @@ export function Footer({ shop }) {
 
         <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-white/40 text-sm">© {year} {shopName}. {t('footer.rights')}.</p>
-          <LanguageSwitcher />
         </div>
       </div>
     </footer>

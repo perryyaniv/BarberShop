@@ -99,6 +99,20 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Public customer lookup by phone (for login flow)
+router.get('/customer-lookup', async (req, res) => {
+  const { phone } = req.query;
+  if (!phone) return res.status(400).json({ error: 'phone required' });
+  await connectDB();
+  try {
+    const normalized = normalizePhone(phone);
+    const customer = await Customer.findOne({ phone: normalized }).lean();
+    res.json({ found: !!customer, name: customer?.name ?? null });
+  } catch {
+    res.json({ found: false, name: null });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   await connectDB();
   const appointment = await Appointment.findById(req.params.id)

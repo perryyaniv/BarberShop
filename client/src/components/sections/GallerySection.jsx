@@ -31,7 +31,7 @@ export function GallerySection({ shop }) {
               onClick={() => setLightboxIndex(i)}
               className="relative aspect-square overflow-hidden rounded-lg group focus:outline-none focus:ring-2 focus:ring-gold"
             >
-              <img src={url} alt={`Gallery image ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+              <img src={url} alt={`תמונה ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
               <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/30 transition-colors" />
             </button>
           ))}
