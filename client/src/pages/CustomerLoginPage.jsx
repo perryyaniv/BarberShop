@@ -14,7 +14,7 @@ export function CustomerLoginPage() {
   const { customer, login, logout } = useCustomer()
   const navigate = useNavigate()
   const location = useLocation()
-  const next = new URLSearchParams(location.search).get('next') || '/book'
+  const next = new URLSearchParams(location.search).get('next') || '/'
 
   const [form, setForm] = useState({
     firstName: customer?.firstName ?? '',
