@@ -10,6 +10,7 @@ const createAppointmentSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   startTime: z.string().regex(/^\d{2}:\d{2}$/),
   customerName: z.string().min(2),
+  customerPhone: z.string().min(9),
   notes: z.string().max(500).optional(),
 });
 

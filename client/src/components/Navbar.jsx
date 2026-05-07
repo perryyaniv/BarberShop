@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { Button } from './ui/button'
-import { Menu, X, Scissors } from 'lucide-react'
+import { Menu, X, Scissors, CalendarDays, User } from 'lucide-react'
+import { useCustomer } from '../context/CustomerContext'
 
 export function Navbar() {
   const { t } = useTranslation()
+  const { customer } = useCustomer()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
@@ -35,9 +37,24 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          <Link to="/book">
-            <Button variant="gold" size="sm">{t('nav.book')}</Button>
-          </Link>
+          {customer ? (
+            <>
+              <Link to="/my-appointments" className="hidden md:flex items-center gap-1.5 text-sm text-white/70 hover:text-gold transition-colors">
+                <CalendarDays className="w-4 h-4" />
+                <span>התורים שלי</span>
+              </Link>
+              <Link to="/book">
+                <Button variant="gold" size="sm" className="flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5" />
+                  <span>{customer.firstName}</span>
+                </Button>
+              </Link>
+            </>
+          ) : (
+            <Link to="/login">
+              <Button variant="gold" size="sm">{t('nav.book')}</Button>
+            </Link>
+          )}
           <button className="md:hidden p-2" onClick={() => setMenuOpen((v) => !v)} aria-label="Toggle menu">
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -56,7 +73,12 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
-          <Link to="/book" onClick={() => setMenuOpen(false)}>
+          {customer && (
+            <Link to="/my-appointments" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 py-3 text-white/80 hover:text-gold transition-colors border-b border-white/10">
+              <CalendarDays className="w-4 h-4" /> התורים שלי
+            </Link>
+          )}
+          <Link to={customer ? '/book' : '/login'} onClick={() => setMenuOpen(false)}>
             <Button variant="gold" size="sm" className="mt-4 w-full">{t('nav.book')}</Button>
           </Link>
         </div>

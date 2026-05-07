@@ -4,7 +4,7 @@ const { connectDB } = require('../lib/db');
 const Appointment = require('../models/Appointment');
 const Customer = require('../models/Customer');
 const Service = require('../models/Service');
-const { createAppointmentSchema } = require('../lib/validations');
+const { createAppointmentSchema, normalizePhone } = require('../lib/validations');
 const { checkSlotAvailable, getAvailableSlots } = require('../lib/availability');
 
 const router = express.Router();
@@ -23,13 +23,28 @@ router.get('/available-slots', async (req, res) => {
   res.json({ slots });
 });
 
+// Get appointments by customer phone
+router.get('/my', async (req, res) => {
+  const { phone } = req.query;
+  if (!phone) return res.status(400).json({ error: 'phone required' });
+  await connectDB();
+  const normalized = normalizePhone(phone);
+  const customer = await Customer.findOne({ phone: normalized }).lean();
+  if (!customer) return res.json({ appointments: [] });
+  const appointments = await Appointment.find({ customerId: customer._id })
+    .populate('serviceId', 'name durationMinutes priceIls')
+    .sort({ startTime: -1 })
+    .lean();
+  res.json({ appointments });
+});
+
 router.post('/', async (req, res) => {
   const parsed = createAppointmentSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: 'Invalid data', details: parsed.error.flatten() });
   }
 
-  const { serviceId, date, startTime, customerName, notes } = parsed.data;
+  const { serviceId, date, startTime, customerName, customerPhone, notes } = parsed.data;
 
   try {
     await connectDB();
@@ -48,7 +63,25 @@ router.post('/', async (req, res) => {
       return res.status(409).json({ error: 'slot_taken' });
     }
 
-    const customer = await Customer.create({ name: customerName });
+    // Upsert customer by phone
+    const normalizedPhone = normalizePhone(customerPhone);
+    let customer = await Customer.findOne({ phone: normalizedPhone });
+    if (!customer) {
+      customer = await Customer.create({ name: customerName, phone: normalizedPhone });
+    } else {
+      customer.name = customerName;
+      await customer.save();
+    }
+
+    // Prevent double-booking: one active future appointment per customer
+    const existing = await Appointment.findOne({
+      customerId: customer._id,
+      status: { $in: ['confirmed', 'pending_verification'] },
+      startTime: { $gte: new Date() },
+    });
+    if (existing) {
+      return res.status(409).json({ error: 'already_booked' });
+    }
 
     const appt = await Appointment.create({
       customerId: customer._id,

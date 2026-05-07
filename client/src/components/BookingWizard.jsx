@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useCustomer } from '../context/CustomerContext'
 import { format, addDays, startOfToday, parseISO } from 'date-fns'
 import { he as heLocale, enUS } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, Check, Download, X } from 'lucide-react'
@@ -18,12 +20,14 @@ export function BookingWizard({ services }) {
   const { t, i18n } = useTranslation()
   const locale = i18n.language
   const dateLocale = locale === 'he' ? heLocale : enUS
+  const { customer } = useCustomer()
+  const navigate = useNavigate()
 
   const [step, setStep] = useState(0)
   const [selectedService, setSelectedService] = useState(null)
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
-  const [customerName, setCustomerName] = useState('')
+  const [customerName, setCustomerName] = useState(customer?.fullName ?? '')
   const [notes, setNotes] = useState('')
   const [appointmentId, setAppointmentId] = useState(null)
   const [slots, setSlots] = useState([])
@@ -66,6 +70,7 @@ export function BookingWizard({ services }) {
         date: selectedDate,
         startTime: selectedTime,
         customerName,
+        customerPhone: customer?.phone ?? '',
         notes,
       })
       setAppointmentId(data.appointmentId)
@@ -75,6 +80,9 @@ export function BookingWizard({ services }) {
         toast({ variant: 'destructive', title: t('booking.slotUnavailable') })
         setStep(2)
         loadSlots(selectedDate, selectedService._id)
+      } else if (err.response?.data?.error === 'already_booked') {
+        toast({ variant: 'destructive', title: 'כבר קיים תור פעיל על שמך. בטל אותו לפני הזמנה חדשה.' })
+        setTimeout(() => navigate('/my-appointments'), 1500)
       } else {
         toast({ variant: 'destructive', title: err.response?.data?.error || t('common.error') })
       }
@@ -290,9 +298,9 @@ export function BookingWizard({ services }) {
             </Button>
             {appointmentId && (
               <Button variant="outline" onClick={async () => {
-                if (!confirm('Are you sure you want to cancel?')) return
+                if (!confirm('לבטל את התור?')) return
                 await api.post(`/api/appointments/${appointmentId}/cancel`)
-                toast({ title: 'Appointment cancelled' })
+                toast({ title: 'התור בוטל' })
               }}>
                 <X className="w-4 h-4 me-2" />{t('booking.cancelBooking')}
               </Button>
