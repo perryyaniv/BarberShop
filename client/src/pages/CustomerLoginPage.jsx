@@ -87,7 +87,7 @@ export function CustomerLoginPage() {
             </div>
           </div>
           <h1 className="text-2xl font-bold text-white">
-            HairStyles <span className="text-gold">RP</span>
+            <span className="text-gold">RP</span> HairStyles
           </h1>
           <p className="text-white/50 text-sm mt-1">ברוך הבא! הכנס את הפרטים שלך</p>
         </div>

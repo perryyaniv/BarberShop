@@ -27,7 +27,7 @@ export function LoadingScreen() {
 
       <div className="text-center space-y-1">
         <p className="text-white font-bold text-lg tracking-wide">
-          HairStyles <span className="text-gold">RP</span>
+          <span className="text-gold">RP</span> HairStyles
         </p>
         <p className="text-white/40 text-sm">טוען</p>
       </div>

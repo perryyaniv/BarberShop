@@ -47,8 +47,8 @@ export function Navbar() {
 
         <Link to="/" className="flex items-center gap-2 font-bold text-lg">
           <Scissors className="w-5 h-5 text-gold" />
-          <span>HairStyles </span>
           <span className="text-gold">RP</span>
+          <span>HairStyles</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">

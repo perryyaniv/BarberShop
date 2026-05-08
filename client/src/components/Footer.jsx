@@ -3,7 +3,7 @@ import { Scissors, Instagram, MessageCircle, Phone, MapPin } from 'lucide-react'
 
 export function Footer({ shop }) {
   const { t } = useTranslation()
-  const shopName = shop?.name?.he ?? 'HairStyles RP'
+  const shopName = shop?.name?.he ?? 'RP HairStyles'
   const year = new Date().getFullYear()
 
   return (

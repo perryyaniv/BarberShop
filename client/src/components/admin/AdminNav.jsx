@@ -25,7 +25,7 @@ export function AdminNav() {
   const NavContent = () => (
     <>
       <div className="px-4 py-5 border-b border-white/10">
-        <p className="font-bold text-lg"><span className="text-white">HairStyles </span><span className="text-gold">RP</span></p>
+        <p className="font-bold text-lg"><span className="text-gold">RP</span><span className="text-white"> HairStyles</span></p>
         <p className="text-white/40 text-xs">פאנל ניהול</p>
       </div>
       <nav className="flex-1 p-4 space-y-1">
