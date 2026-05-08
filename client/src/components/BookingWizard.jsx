@@ -127,8 +127,9 @@ export function BookingWizard({ services }) {
         setStep(2)
         loadSlots(selectedDate, selectedService._id)
       } else if (err.response?.data?.error === 'already_booked') {
-        toast({ variant: 'destructive', title: 'כבר קיים תור פעיל על שמך. בטל אותו לפני הזמנה חדשה.' })
-        setTimeout(() => navigate('/my-appointments'), 1500)
+        const minDays = err.response.data.minDays
+        toast({ variant: 'destructive', title: `לא ניתן להזמין תור — חייב מרווח של לפחות ${minDays} ימים בין תורים` })
+        setTimeout(() => navigate('/my-appointments'), 2000)
       } else {
         toast({ variant: 'destructive', title: err.response?.data?.error || t('common.error') })
       }

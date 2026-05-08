@@ -105,7 +105,7 @@ router.post('/', async (req, res) => {
           $lte: new Date(startDatetime.getTime() + minDays * 86400000),
         },
       });
-      if (existing) return res.status(409).json({ error: 'already_booked' });
+      if (existing) return res.status(409).json({ error: 'already_booked', minDays });
     }
 
     const appt = await Appointment.create({
