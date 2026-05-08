@@ -76,16 +76,11 @@ function dayLabel(dateStr) {
   return format(d, 'EEEE, d/M/yyyy', { locale: he })
 }
 
-function AddAppointmentModal({ onClose, onCreated }) {
-  const [services, setServices] = useState([])
+function AddAppointmentModal({ services, onClose, onCreated }) {
   const [slots, setSlots] = useState([])
   const [loadingSlots, setLoadingSlots] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [form, setForm] = useState({ serviceId: '', date: '', time: '', name: '', phone: '', notes: '' })
-
-  useEffect(() => {
-    api.get('/api/admin/services').then(({ data }) => setServices(data.services ?? []))
-  }, [])
 
   useEffect(() => {
     if (!form.serviceId || !form.date) { setSlots([]); return }
@@ -186,6 +181,7 @@ function AddAppointmentModal({ onClose, onCreated }) {
 
 export function AppointmentsManager() {
   const [appointments, setAppointments] = useState([])
+  const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
   const [preset, setPreset] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -211,7 +207,10 @@ export function AppointmentsManager() {
     }
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    load()
+    api.get('/api/admin/services').then(({ data }) => setServices(data.services ?? [])).catch(() => {})
+  }, [])
 
   async function updateStatus(id, status) {
     try {
@@ -250,7 +249,7 @@ export function AppointmentsManager() {
   return (
     <div className="space-y-5">
       <Toaster />
-      {showAdd && <AddAppointmentModal onClose={() => setShowAdd(false)} onCreated={() => load()} />}
+      {showAdd && <AddAppointmentModal services={services} onClose={() => setShowAdd(false)} onCreated={() => load()} />}
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <h1 className="text-2xl font-bold text-charcoal">ניהול תורים</h1>
