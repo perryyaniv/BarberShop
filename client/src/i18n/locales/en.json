@@ -87,6 +87,7 @@
     "successMessage": "Your appointment for {{service}} is scheduled for {{date}} at {{time}}",
     "addToCalendar": "Add to Calendar",
     "cancelBooking": "Cancel Booking",
+    "viewMyAppointments": "My Appointments",
     "noSlotsAvailable": "No available slots on this day",
     "slotUnavailable": "This time slot is no longer available. Please choose another.",
     "phoneFormat": "Enter Israeli phone number (0XX-XXXXXXX)",

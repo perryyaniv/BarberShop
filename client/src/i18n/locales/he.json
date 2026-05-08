@@ -88,6 +88,7 @@
     "successMessage": "תור נקבע ל-{{service}} בתאריך {{date}} בשעה {{time}}",
     "addToCalendar": "הוסף ליומן",
     "cancelBooking": "בטל הזמנה",
+    "viewMyAppointments": "התורים שלי",
     "noSlotsAvailable": "אין תורים פנויים ביום זה",
     "slotUnavailable": "השעה שנבחרה אינה פנויה יותר. אנא בחר שעה אחרת.",
     "phoneFormat": "הכנס מספר בפורמט ישראלי (0XX-XXXXXXX)",
