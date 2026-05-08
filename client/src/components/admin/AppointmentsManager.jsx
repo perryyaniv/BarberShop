@@ -219,15 +219,41 @@ function ListView({ appointments, onUpdateStatus }) {
   )
 }
 
-function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
-  const past = isPast(new Date(a.startTime))
-  const terminal = ['completed', 'cancelled', 'no_show'].includes(a.status)
+const TERMINAL_STATUSES = ['completed', 'cancelled', 'no_show']
 
-  // Future: confirm pending / cancel active. Past: freely change between all terminal statuses.
+function StatusSelect({ status, onSelect }) {
+  const options = TERMINAL_STATUSES.filter((s) => s !== status)
+  return (
+    <select
+      autoFocus
+      className="text-xs rounded border border-ink/20 bg-white px-1.5 py-0.5 text-ink focus:outline-none focus:ring-1 focus:ring-gold min-w-[5rem]"
+      defaultValue=""
+      onChange={(e) => { if (e.target.value) onSelect(e.target.value) }}
+      onBlur={(e) => { if (!e.target.value) onSelect(null) }}
+    >
+      <option value="" disabled>שנה סטטוס</option>
+      {options.map((s) => (
+        <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+      ))}
+    </select>
+  )
+}
+
+function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
+  const [editing, setEditing] = useState(false)
+  const past = isPast(new Date(a.startTime))
+  const terminal = TERMINAL_STATUSES.includes(a.status)
+  const canEdit = past && terminal
+
+  const handleStatusSelect = (newStatus) => {
+    setEditing(false)
+    if (newStatus) onUpdateStatus(a._id, newStatus)
+  }
+
   const showConfirm = !past && a.status === 'pending_verification'
-  const showComplete = past && a.status !== 'completed'
-  const showNoShow = past && a.status !== 'no_show'
-  const showCancel = !terminal || (past && a.status !== 'cancelled')
+  const showComplete = past && a.status === 'confirmed'
+  const showNoShow = past && a.status !== 'no_show' && !terminal
+  const showCancel = !terminal
   const hasActions = showConfirm || showComplete || showNoShow || showCancel
 
   return (
@@ -257,16 +283,22 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
                 </p>
                 {a.notes && <p className="text-xs text-ink/40 italic mt-0.5 truncate">{a.notes}</p>}
               </div>
-              <Badge
-                variant={STATUS_COLORS[a.status]}
-                className={cn(
-                  'shrink-0 mt-0.5 min-w-[5rem] justify-center',
-                  a.status === 'completed' && 'border border-green-500 text-green-600 bg-transparent',
-                  a.status === 'no_show' && 'border border-red-500 text-red-500 bg-transparent',
-                )}
-              >
-                {STATUS_LABELS[a.status] ?? a.status}
-              </Badge>
+              {editing ? (
+                <StatusSelect status={a.status} onSelect={handleStatusSelect} />
+              ) : (
+                <Badge
+                  variant={STATUS_COLORS[a.status]}
+                  onClick={canEdit ? () => setEditing(true) : undefined}
+                  className={cn(
+                    'shrink-0 mt-0.5 min-w-[5rem] justify-center',
+                    a.status === 'completed' && 'border border-green-500 text-green-600 bg-transparent',
+                    a.status === 'no_show' && 'border border-red-500 text-red-500 bg-transparent',
+                    canEdit && 'cursor-pointer hover:opacity-70 transition-opacity',
+                  )}
+                >
+                  {STATUS_LABELS[a.status] ?? a.status}
+                </Badge>
+              )}
             </div>
           </div>
         </div>
