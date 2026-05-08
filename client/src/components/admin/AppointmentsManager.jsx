@@ -101,6 +101,7 @@ function AddAppointmentModal({ services, onClose, onCreated }) {
 
   async function submit(e) {
     e.preventDefault()
+    if (!valid) return
     setSubmitting(true)
     try {
       await api.post('/api/admin/appointments', {
@@ -124,8 +125,8 @@ function AddAppointmentModal({ services, onClose, onCreated }) {
   const valid = form.serviceId && form.date && form.time && form.name.length >= 2 && form.phone.length >= 9
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-ink/10">
           <h2 className="font-bold text-charcoal text-lg">הוספת תור ידנית</h2>
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-cream-warm transition-colors"><X className="w-5 h-5 text-ink/50" /></button>
