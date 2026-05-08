@@ -4,6 +4,7 @@ import { Calendar, Users, TrendingUp } from 'lucide-react'
 import { Card, CardContent } from '../../components/ui/card'
 import { Badge } from '../../components/ui/badge'
 import api from '../../lib/api'
+import { formatPhone } from '../../lib/utils'
 
 const STATUS_COLOR = {
   confirmed: 'success',
@@ -63,7 +64,7 @@ export function Dashboard() {
                   <div>
                     <p className="font-semibold text-ink">{a.customerId?.name ?? 'Unknown'}</p>
                     <p className="text-sm text-ink/50">
-                      {a.serviceId?.name?.he ?? 'שירות'} • <span dir="ltr">{a.customerId?.phone}</span>
+                      {a.serviceId?.name?.he ?? 'שירות'} • <span dir="ltr">{formatPhone(a.customerId?.phone)}</span>
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-1">

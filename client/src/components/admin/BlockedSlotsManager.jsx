@@ -10,6 +10,7 @@ import { Toaster } from '../ui/toaster'
 import { toast } from '../../hooks/use-toast'
 import { cn } from '../../lib/utils'
 import api from '../../lib/api'
+import { formatPhone } from '../../lib/utils'
 
 const MODES = [
   { key: 'fullDay', label: 'יום שלם', icon: CalendarOff },
@@ -148,7 +149,7 @@ export function BlockedSlotsManager() {
               {conflicts.map((a) => (
                 <div key={a._id} className="bg-cream-warm rounded-lg p-3 text-sm">
                   <p className="font-medium text-ink">{a.customerId?.name}</p>
-                  <p className="text-ink/50 text-xs">{a.customerId?.phone}</p>
+                  <p className="text-ink/50 text-xs">{formatPhone(a.customerId?.phone)}</p>
                   <p className="text-ink/60 text-xs mt-0.5" dir="ltr">
                     {format(new Date(a.startTime), 'd/M/yyyy HH:mm')} — {a.serviceId?.name?.he}
                   </p>

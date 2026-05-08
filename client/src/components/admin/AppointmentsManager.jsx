@@ -9,6 +9,7 @@ import { Toaster } from '../ui/toaster'
 import { toast } from '../../hooks/use-toast'
 import { cn } from '../../lib/utils'
 import api from '../../lib/api'
+import { formatPhone } from '../../lib/utils'
 
 const STATUS_COLORS = {
   confirmed: 'success',
@@ -230,7 +231,7 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
               <p className="font-semibold text-ink">{a.customerId?.name ?? 'לא ידוע'}</p>
               {a.customerId?.phone && (
                 <a href={`tel:${a.customerId.phone}`} className="text-xs text-ink/50 hover:text-gold transition-colors font-mono" dir="ltr">
-                  {a.customerId.phone}
+                  {formatPhone(a.customerId.phone)}
                 </a>
               )}
             </div>

@@ -11,6 +11,7 @@ import { Toaster } from '../components/ui/toaster'
 import { toast } from '../hooks/use-toast'
 import { useCustomer } from '../context/CustomerContext'
 import api from '../lib/api'
+import { formatPhone } from '../lib/utils'
 
 const STATUS_COLORS = {
   confirmed: 'success',
@@ -76,7 +77,7 @@ export function MyAppointmentsPage() {
           <div>
             <h1 className="text-2xl font-bold text-charcoal">התורים שלי</h1>
             {customer && (
-              <p className="text-ink/50 text-sm mt-1">{customer.fullName} · {customer.phone}</p>
+              <p className="text-ink/50 text-sm mt-1">{customer.fullName} · {formatPhone(customer.phone)}</p>
             )}
           </div>
           <button

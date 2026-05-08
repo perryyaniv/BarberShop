@@ -4,6 +4,7 @@ import { Search } from 'lucide-react'
 import { Card, CardContent } from '../ui/card'
 import { Input } from '../ui/input'
 import api from '../../lib/api'
+import { formatPhone } from '../../lib/utils'
 
 export function CustomersManager() {
   const [customers, setCustomers] = useState([])
@@ -43,7 +44,7 @@ export function CustomersManager() {
               <CardContent className="py-4 px-5 flex items-center justify-between gap-4">
                 <div>
                   <p className="font-semibold text-ink">{c.name}</p>
-                  <p className="text-sm text-ink/50" dir="ltr">{c.phone}</p>
+                  <p className="text-sm text-ink/50" dir="ltr">{formatPhone(c.phone)}</p>
                 </div>
                 <div className="text-end space-y-0.5">
                   <p className="text-sm font-medium text-charcoal">{c.visitCount} ביקורים</p>
