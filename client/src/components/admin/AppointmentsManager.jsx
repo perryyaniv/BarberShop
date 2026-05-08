@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isToday, isTomorrow, isPast } from 'date-fns'
 import { he } from 'date-fns/locale'
-import { RefreshCw, Search, Calendar, List } from 'lucide-react'
+import { RefreshCw, Search, Calendar, List, Plus, X } from 'lucide-react'
 import { Card, CardContent } from '../ui/card'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
@@ -76,6 +76,110 @@ function dayLabel(dateStr) {
   return format(d, 'EEEE, d/M/yyyy', { locale: he })
 }
 
+function AddAppointmentModal({ onClose, onCreated }) {
+  const [services, setServices] = useState([])
+  const [slots, setSlots] = useState([])
+  const [loadingSlots, setLoadingSlots] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [form, setForm] = useState({ serviceId: '', date: '', time: '', name: '', phone: '', notes: '' })
+
+  useEffect(() => {
+    api.get('/api/admin/services').then(({ data }) => setServices(data.services ?? []))
+  }, [])
+
+  useEffect(() => {
+    if (!form.serviceId || !form.date) { setSlots([]); return }
+    setLoadingSlots(true)
+    api.get(`/api/appointments/available-slots?date=${form.date}&serviceId=${form.serviceId}`)
+      .then(({ data }) => setSlots(data.slots ?? []))
+      .catch(() => setSlots([]))
+      .finally(() => setLoadingSlots(false))
+  }, [form.serviceId, form.date])
+
+  function set(field, value) {
+    setForm((f) => ({ ...f, [field]: value, ...(field === 'serviceId' || field === 'date' ? { time: '' } : {}) }))
+  }
+
+  async function submit(e) {
+    e.preventDefault()
+    setSubmitting(true)
+    try {
+      await api.post('/api/admin/appointments', {
+        serviceId: form.serviceId,
+        date: form.date,
+        startTime: form.time,
+        customerName: form.name,
+        customerPhone: form.phone,
+        notes: form.notes || undefined,
+      })
+      onCreated()
+      onClose()
+    } catch (err) {
+      toast({ variant: 'destructive', title: err.response?.data?.error || 'שגיאה ביצירת תור' })
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const today = format(new Date(), 'yyyy-MM-dd')
+  const valid = form.serviceId && form.date && form.time && form.name.length >= 2 && form.phone.length >= 9
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-ink/10">
+          <h2 className="font-bold text-charcoal text-lg">הוספת תור ידנית</h2>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-cream-warm transition-colors"><X className="w-5 h-5 text-ink/50" /></button>
+        </div>
+        <form onSubmit={submit} className="p-5 space-y-4">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-ink">שירות</label>
+            <select required className="w-full h-10 rounded-md border border-ink/20 bg-white px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-gold" value={form.serviceId} onChange={(e) => set('serviceId', e.target.value)}>
+              <option value="">בחר שירות...</option>
+              {services.map((s) => <option key={s._id} value={s._id}>{s.name?.he} — {s.durationMinutes} דק׳ / ₪{s.priceIls}</option>)}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-ink">תאריך</label>
+              <Input type="date" min={today} value={form.date} onChange={(e) => set('date', e.target.value)} required />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-ink">שעה</label>
+              <select required className="w-full h-10 rounded-md border border-ink/20 bg-white px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-gold disabled:opacity-50" value={form.time} onChange={(e) => set('time', e.target.value)} disabled={!form.serviceId || !form.date}>
+                <option value="">{loadingSlots ? 'טוען...' : 'בחר שעה...'}</option>
+                {slots.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-ink">שם לקוח</label>
+              <Input placeholder="ישראל ישראלי" value={form.name} onChange={(e) => set('name', e.target.value)} required minLength={2} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-ink">טלפון</label>
+              <Input placeholder="05XXXXXXXX" value={form.phone} onChange={(e) => set('phone', e.target.value)} required minLength={9} dir="ltr" />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-ink">הערות <span className="text-ink/40 font-normal">(אופציונלי)</span></label>
+            <Input placeholder="..." value={form.notes} onChange={(e) => set('notes', e.target.value)} />
+          </div>
+
+          <div className="flex gap-2 pt-1">
+            <Button type="button" variant="outline" className="flex-1" onClick={onClose}>ביטול</Button>
+            <Button type="submit" className="flex-1" disabled={!valid || submitting}>{submitting ? 'שומר...' : 'צור תור'}</Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 export function AppointmentsManager() {
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
@@ -83,6 +187,7 @@ export function AppointmentsManager() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [view, setView] = useState('schedule')
+  const [showAdd, setShowAdd] = useState(false)
 
   async function load(p = preset, s = statusFilter) {
     setLoading(true)
@@ -141,6 +246,7 @@ export function AppointmentsManager() {
   return (
     <div className="space-y-5">
       <Toaster />
+      {showAdd && <AddAppointmentModal onClose={() => setShowAdd(false)} onCreated={() => load()} />}
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <h1 className="text-2xl font-bold text-charcoal">ניהול תורים</h1>
@@ -153,6 +259,10 @@ export function AppointmentsManager() {
           </button>
           <Button variant="ghost" size="sm" onClick={() => load()} disabled={loading}>
             <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
+          </Button>
+          <Button size="sm" onClick={() => setShowAdd(true)}>
+            <Plus className="w-4 h-4 me-1" />
+            הוסף תור
           </Button>
         </div>
       </div>
@@ -257,7 +367,7 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
   const hasActions = showConfirm || showComplete || showNoShow || showCancel
 
   return (
-    <Card className={cn(terminal ? 'opacity-60' : '', a.status === 'confirmed' && 'border-green-300')}>
+    <Card className={cn(terminal ? 'opacity-60' : '')}>
       <CardContent className="py-3 px-4">
         <div className="flex items-start gap-3 min-w-0">
           <div className="text-center shrink-0 w-12">
