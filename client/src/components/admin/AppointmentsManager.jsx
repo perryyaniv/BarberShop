@@ -247,7 +247,14 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
                 </p>
                 {a.notes && <p className="text-xs text-ink/40 italic mt-0.5 truncate">{a.notes}</p>}
               </div>
-              <Badge variant={STATUS_COLORS[a.status]} className="shrink-0 mt-0.5">
+              <Badge
+                variant={STATUS_COLORS[a.status]}
+                className={cn(
+                  'shrink-0 mt-0.5',
+                  a.status === 'completed' && 'border border-green-500 text-green-600 bg-transparent',
+                  a.status === 'no_show' && 'border border-red-500 text-red-500 bg-transparent',
+                )}
+              >
                 {STATUS_LABELS[a.status] ?? a.status}
               </Badge>
             </div>
