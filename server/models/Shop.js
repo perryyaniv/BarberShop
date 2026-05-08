@@ -21,7 +21,7 @@ const ShopSchema = new mongoose.Schema(
       whatsapp: { type: String },
     },
     slotIntervalMinutes: { type: Number, default: 30 },
-    minDaysBetweenAppointments: { type: Number, default: 0 },
+    minDaysBetweenAppointments: { type: Number, default: 7 },
   },
   { timestamps: true }
 );
