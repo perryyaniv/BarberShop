@@ -189,7 +189,7 @@ export function BookingWizard({ services }) {
           {daysLoading && (
             <p className="text-center text-ink/40 text-sm py-1 shrink-0">{t('common.loading')}</p>
           )}
-          <div className="overflow-y-auto flex-1">
+          <div className="overflow-y-auto">
             <div className="grid grid-cols-7 gap-1.5">
               {Array.from({ length: 28 }).map((_, i) => {
                 const date = addDays(startOfToday(), i)
@@ -220,17 +220,13 @@ export function BookingWizard({ services }) {
                   >
                     <span className="opacity-60 text-[10px]">{format(date, 'EEE', { locale: dateLocale })}</span>
                     <span className="font-semibold text-sm">{format(date, 'd')}</span>
-                    {isFull ? (
-                      <span className="text-[10px] text-red-400 font-medium">מלא</span>
-                    ) : (
-                      <span className="opacity-50 text-[10px]">{format(date, 'MMM', { locale: dateLocale })}</span>
-                    )}
+                    <span className="opacity-50 text-[10px]">{format(date, 'MMM', { locale: dateLocale })}</span>
                   </button>
                 )
               })}
             </div>
           </div>
-          <div className="flex justify-between pt-3 mt-2 border-t border-ink/5 shrink-0">
+          <div className="flex justify-between pt-3 mt-auto border-t border-ink/5 shrink-0">
             <Button variant="ghost" size="sm" onClick={() => setStep(0)}>
               <ChevronRight className="w-4 h-4 rtl:rotate-0 ltr:rotate-180 me-1" />{t('booking.back')}
             </Button>
