@@ -25,6 +25,21 @@ app.use('/api/otp', otpRoutes);
 app.use('/api', publicRoutes);
 app.use('/api/cron', cronRoutes);
 
+// Auto-complete confirmed appointments that ended more than 1 hour ago
+cron.schedule('*/30 * * * *', async () => {
+  try {
+    const Appointment = require('./models/Appointment');
+    await connectDB();
+    const cutoff = new Date(Date.now() - 60 * 60 * 1000);
+    await Appointment.updateMany(
+      { startTime: { $lt: cutoff }, status: 'confirmed' },
+      { $set: { status: 'completed' } }
+    );
+  } catch (err) {
+    console.error('Auto-complete cron error:', err);
+  }
+});
+
 // SMS reminders at 07:00 and 17:00 Israel time
 cron.schedule('0 7,17 * * *', async () => {
   try {

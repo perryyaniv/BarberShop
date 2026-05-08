@@ -220,14 +220,18 @@ function ListView({ appointments, onUpdateStatus }) {
 }
 
 function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
-  const next = NEXT_STATUSES[a.status]
   const past = isPast(new Date(a.startTime))
-  const hasActions =
-    (next && (next !== 'completed' || past)) ||
-    (a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show')
+  const terminal = ['completed', 'cancelled', 'no_show'].includes(a.status)
+
+  // Future: confirm pending / cancel active. Past: freely change between all terminal statuses.
+  const showConfirm = !past && a.status === 'pending_verification'
+  const showComplete = past && a.status !== 'completed'
+  const showNoShow = past && a.status !== 'no_show'
+  const showCancel = !terminal || (past && a.status !== 'cancelled')
+  const hasActions = showConfirm || showComplete || showNoShow || showCancel
 
   return (
-    <Card className={cn(['cancelled', 'completed', 'no_show'].includes(a.status) ? 'opacity-60' : '')}>
+    <Card className={cn(terminal ? 'opacity-60' : '')}>
       <CardContent className="py-3 px-4">
         <div className="flex items-start gap-3 min-w-0">
           <div className="text-center shrink-0 w-12">
@@ -269,22 +273,22 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
 
         {hasActions && (
           <div className="flex items-center gap-2 flex-wrap mt-3 pt-2.5 border-t border-ink/10 ms-12">
-            {next && (next !== 'completed' || past) && (
-              <Button
-                size="sm"
-                variant="outline"
-                className={cn(next === 'completed' && 'border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700')}
-                onClick={() => onUpdateStatus(a._id, next)}
-              >
-                {NEXT_LABELS[next] ?? next}
+            {showConfirm && (
+              <Button size="sm" variant="outline" onClick={() => onUpdateStatus(a._id, 'confirmed')}>
+                אשר
               </Button>
             )}
-            {a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show' && past && (
+            {showComplete && (
+              <Button size="sm" variant="outline" className="border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700" onClick={() => onUpdateStatus(a._id, 'completed')}>
+                סמן כהושלם
+              </Button>
+            )}
+            {showNoShow && (
               <Button size="sm" variant="outline" className="border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600" onClick={() => onUpdateStatus(a._id, 'no_show')}>
                 לא הגיע
               </Button>
             )}
-            {a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show' && (
+            {showCancel && (
               <Button size="sm" variant="destructive" onClick={() => onUpdateStatus(a._id, 'cancelled')}>
                 בטל
               </Button>
