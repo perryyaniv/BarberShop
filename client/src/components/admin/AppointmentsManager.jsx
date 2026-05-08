@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isToday, isTomorrow, isPast } from 'date-fns'
+import { he } from 'date-fns/locale'
 import { RefreshCw, Search, Calendar, List } from 'lucide-react'
 import { Card, CardContent } from '../ui/card'
 import { Button } from '../ui/button'
@@ -67,7 +68,7 @@ function dayLabel(dateStr) {
   const d = new Date(dateStr)
   if (isToday(d)) return 'היום'
   if (isTomorrow(d)) return 'מחר'
-  return format(d, 'EEEE, d/M/yyyy')
+  return format(d, 'EEEE, d/M/yyyy', { locale: he })
 }
 
 export function AppointmentsManager() {
@@ -250,7 +251,7 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
               <Badge
                 variant={STATUS_COLORS[a.status]}
                 className={cn(
-                  'shrink-0 mt-0.5',
+                  'shrink-0 mt-0.5 min-w-[5rem] justify-center',
                   a.status === 'completed' && 'border border-green-500 text-green-600 bg-transparent',
                   a.status === 'no_show' && 'border border-red-500 text-red-500 bg-transparent',
                 )}
