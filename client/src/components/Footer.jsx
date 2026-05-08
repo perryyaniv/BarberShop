@@ -58,7 +58,7 @@ export function Footer({ shop }) {
         </div>
 
         <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/40 text-sm">© {year}. כל הזכויות שמורות.</p>
+          <p className="text-white/40 text-sm">כל הזכויות שמורות.</p>
           <p className="text-white/30 text-xs">
             נבנה ע"י יניב פרי &middot;{' '}
             <a href="mailto:perryyaniv@gmail.com" className="hover:text-white/60 transition-colors">perryyaniv@gmail.com</a>
