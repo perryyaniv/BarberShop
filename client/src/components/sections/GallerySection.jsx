@@ -21,7 +21,6 @@ export function GallerySection({ shop }) {
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">{t('gallery.title')}</h2>
-          <p className="text-white/60 text-base">{t('gallery.subtitle')}</p>
           <div className="w-16 h-1 bg-gold mx-auto rounded-full mt-4" />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
