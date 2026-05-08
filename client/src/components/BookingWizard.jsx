@@ -31,6 +31,7 @@ export function BookingWizard({ services }) {
   const [inactiveDays, setInactiveDays] = useState(new Set())
   const [daysStatus, setDaysStatus] = useState({})   // dateStr → boolean
   const [daysLoading, setDaysLoading] = useState(false)
+  const [minDaysSetting, setMinDaysSetting] = useState(7)
 
   const stepLabels = [
     t('booking.steps.service'),
@@ -51,7 +52,7 @@ export function BookingWizard({ services }) {
         (hoursRes.data.hours ?? []).filter((h) => !h.isActive).map((h) => h.dayOfWeek)
       )
       setInactiveDays(inactive)
-
+      setMinDaysSetting(settingsRes.data.minDaysBetweenAppointments ?? 7)
     }
     init()
   }, [])
@@ -127,7 +128,7 @@ export function BookingWizard({ services }) {
         setStep(2)
         loadSlots(selectedDate, selectedService._id)
       } else if (err.response?.data?.error === 'already_booked') {
-        const minDays = err.response.data.minDays
+        const minDays = err.response.data.minDays ?? minDaysSetting
         toast({ variant: 'destructive', title: `לא ניתן להזמין תור — חייב מרווח של לפחות ${minDays} ימים בין תורים` })
         setTimeout(() => navigate('/my-appointments'), 2000)
       } else {
