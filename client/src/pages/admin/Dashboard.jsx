@@ -13,6 +13,14 @@ const STATUS_COLOR = {
   no_show: 'destructive',
 }
 
+const STATUS_LABEL = {
+  confirmed: 'מאושר',
+  pending_verification: 'ממתין לאימות',
+  completed: 'הושלם',
+  cancelled: 'בוטל',
+  no_show: 'לא הגיע',
+}
+
 export function Dashboard() {
   const [stats, setStats] = useState(null)
   const [todayAppts, setTodayAppts] = useState([])
@@ -62,7 +70,7 @@ export function Dashboard() {
                     <span className="font-mono text-charcoal font-bold text-base" dir="ltr">
                       {format(new Date(a.startTime), 'HH:mm')}
                     </span>
-                    <Badge variant={STATUS_COLOR[a.status] ?? 'outline'}>{a.status}</Badge>
+                    <Badge variant={STATUS_COLOR[a.status] ?? 'outline'}>{STATUS_LABEL[a.status] ?? a.status}</Badge>
                   </div>
                 </CardContent>
               </Card>
