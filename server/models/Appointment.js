@@ -20,13 +20,5 @@ const AppointmentSchema = new mongoose.Schema(
 
 AppointmentSchema.index({ startTime: 1, status: 1 });
 AppointmentSchema.index({ customerId: 1, startTime: -1 });
-AppointmentSchema.index(
-  { startTime: 1 },
-  {
-    unique: true,
-    partialFilterExpression: { status: { $in: ['confirmed', 'pending_verification'] } },
-    name: 'startTime_unique_active',
-  }
-);
 
 module.exports = mongoose.models.Appointment || mongoose.model('Appointment', AppointmentSchema);

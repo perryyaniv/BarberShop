@@ -59,7 +59,7 @@ router.get('/my', async (req, res) => {
   const normalized = normalizePhone(phone);
   const customer = await Customer.findOne({ phone: normalized }).lean();
   if (!customer) return res.json({ appointments: [] });
-  await autoCompleteOld(customer._id);
+  try { await autoCompleteOld(customer._id) } catch {}
   const appointments = await Appointment.find({ customerId: customer._id })
     .populate('serviceId', 'name durationMinutes priceIls')
     .sort({ startTime: -1 })
