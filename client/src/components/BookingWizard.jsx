@@ -52,21 +52,6 @@ export function BookingWizard({ services }) {
       )
       setInactiveDays(inactive)
 
-      if (customer?.phone) {
-        const minDays = settingsRes.data.minDaysBetweenAppointments ?? 0
-        if (minDays === 0) {
-          // Only redirect when there's no gap restriction
-          api.get(`/api/appointments/my?phone=${encodeURIComponent(customer.phone)}`).then(({ data }) => {
-            const hasActive = (data.appointments ?? []).some(
-              (a) => ['confirmed', 'pending_verification'].includes(a.status) && new Date(a.startTime) >= new Date()
-            )
-            if (hasActive) {
-              toast({ variant: 'destructive', title: 'כבר קיים תור פעיל על שמך. בטל אותו לפני הזמנה חדשה.' })
-              setTimeout(() => navigate('/my-appointments'), 1800)
-            }
-          }).catch(() => {})
-        }
-      }
     }
     init()
   }, [])
