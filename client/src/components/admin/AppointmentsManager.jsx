@@ -249,7 +249,12 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
               {NEXT_LABELS[next] ?? next}
             </Button>
           )}
-          {a.status !== 'cancelled' && a.status !== 'completed' && (
+          {a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show' && (
+            <Button size="sm" variant="outline" onClick={() => onUpdateStatus(a._id, 'no_show')}>
+              לא הגיע
+            </Button>
+          )}
+          {a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show' && (
             <Button size="sm" variant="destructive" onClick={() => onUpdateStatus(a._id, 'cancelled')}>
               בטל
             </Button>
