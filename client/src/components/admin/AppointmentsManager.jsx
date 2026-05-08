@@ -185,7 +185,7 @@ export function AppointmentsManager() {
   const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
   const [preset, setPreset] = useState('all')
-  const [statusFilter, setStatusFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('confirmed')
   const [search, setSearch] = useState('')
   const [view, setView] = useState('schedule')
   const [showAdd, setShowAdd] = useState(false)
