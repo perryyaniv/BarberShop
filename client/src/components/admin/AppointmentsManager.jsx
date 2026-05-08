@@ -221,7 +221,7 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
     (a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show')
 
   return (
-    <Card className={cn(a.status === 'cancelled' || a.status === 'no_show' ? 'opacity-60' : '')}>
+    <Card className={cn(['cancelled', 'completed', 'no_show'].includes(a.status) ? 'opacity-60' : '')}>
       <CardContent className="py-3 px-4">
         <div className="flex items-start gap-3 min-w-0">
           <div className="text-center shrink-0 w-12">
@@ -262,7 +262,7 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
               </Button>
             )}
             {a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show' && past && (
-              <Button size="sm" variant="outline" onClick={() => onUpdateStatus(a._id, 'no_show')}>
+              <Button size="sm" variant="outline" className="border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600" onClick={() => onUpdateStatus(a._id, 'no_show')}>
                 לא הגיע
               </Button>
             )}
