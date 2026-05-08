@@ -59,7 +59,12 @@ const STATUSES = [
 function getPresetRange(key) {
   const now = new Date()
   if (key === 'today') return { from: startOfDay(now).toISOString(), to: endOfDay(now).toISOString() }
-  if (key === 'week') return { from: startOfWeek(now).toISOString(), to: endOfWeek(now).toISOString() }
+  if (key === 'week') {
+    const sun = startOfWeek(now, { weekStartsOn: 0 })
+    const fri = new Date(sun)
+    fri.setDate(fri.getDate() + 5)
+    return { from: sun.toISOString(), to: endOfDay(fri).toISOString() }
+  }
   if (key === 'month') return { from: startOfMonth(now).toISOString(), to: endOfMonth(now).toISOString() }
   return { from: '', to: '' }
 }
