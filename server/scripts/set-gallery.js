@@ -2,10 +2,7 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') })
 const mongoose = require('mongoose')
 const Shop = require('../models/Shop')
 
-const GALLERY_URLS = [
-  ...Array.from({ length: 11 }, (_, i) => `/Gallery${i + 1}.JPG`),
-  '/Gallery12.jpg',
-]
+const GALLERY_URLS = Array.from({ length: 12 }, (_, i) => `/Gallery${i + 1}.JPG`)
 
 async function run() {
   await mongoose.connect(process.env.MONGODB_URI)
