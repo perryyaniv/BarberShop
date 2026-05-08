@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const { addMinutes, parseISO, setHours, setMinutes, isBefore } = require('date-fns');
 const { connectDB } = require('../lib/db');
 const Appointment = require('../models/Appointment');
@@ -10,10 +9,6 @@ const { createAppointmentSchema, normalizePhone } = require('../lib/validations'
 const { checkSlotAvailable, getAvailableSlots, getDaysAvailability } = require('../lib/availability');
 
 const router = express.Router();
-
-class BookingError extends Error {
-  constructor(type) { super(type); this.bookingErrorType = type; }
-}
 
 // Auto-complete appointments whose start time was >= 1 hour ago
 async function autoCompleteOld(customerId = null) {
@@ -89,64 +84,49 @@ router.post('/', async (req, res) => {
     const shop = await Shop.findOne().lean();
     const minDays = shop?.minDaysBetweenAppointments ?? 0;
 
-    const dbSession = await mongoose.startSession();
-    let appointmentId;
+    const available = await checkSlotAvailable(startDatetime, endDatetime);
+    if (!available) return res.status(409).json({ error: 'slot_taken' });
 
-    try {
-      await dbSession.withTransaction(async () => {
-        // Check slot availability inside the transaction (race condition protection)
-        const available = await checkSlotAvailable(startDatetime, endDatetime, dbSession);
-        if (!available) throw new BookingError('slot_taken');
-
-        // Upsert customer
-        let customer = await Customer.findOne({ phone: normalizedPhone }).session(dbSession);
-        if (!customer) {
-          [customer] = await Customer.create(
-            [{ name: customerName, phone: normalizedPhone }],
-            { session: dbSession }
-          );
-        } else {
-          customer.name = customerName;
-          await customer.save({ session: dbSession });
-        }
-
-        // Check min days gap between appointments
-        let conflictQuery;
-        if (minDays > 0) {
-          const windowMs = minDays * 24 * 60 * 60 * 1000;
-          conflictQuery = {
-            customerId: customer._id,
-            status: { $in: ['confirmed', 'pending_verification'] },
-            startTime: {
-              $gte: new Date(startDatetime.getTime() - windowMs),
-              $lte: new Date(startDatetime.getTime() + windowMs),
-            },
-          };
-        } else {
-          conflictQuery = {
-            customerId: customer._id,
-            status: { $in: ['confirmed', 'pending_verification'] },
-            startTime: { $gte: new Date() },
-          };
-        }
-
-        const existing = await Appointment.findOne(conflictQuery).session(dbSession);
-        if (existing) throw new BookingError('already_booked');
-
-        const [appt] = await Appointment.create(
-          [{ customerId: customer._id, serviceId: service._id, startTime: startDatetime, endTime: endDatetime, status: 'confirmed', notes }],
-          { session: dbSession }
-        );
-        appointmentId = appt._id.toString();
-      });
-    } finally {
-      await dbSession.endSession();
+    // Upsert customer
+    let customer = await Customer.findOne({ phone: normalizedPhone });
+    if (!customer) {
+      customer = await Customer.create({ name: customerName, phone: normalizedPhone });
+    } else {
+      customer.name = customerName;
+      await customer.save();
     }
 
-    res.status(201).json({ appointmentId });
+    // Check min days gap between appointments
+    const conflictQuery = minDays > 0
+      ? {
+          customerId: customer._id,
+          status: { $in: ['confirmed', 'pending_verification'] },
+          startTime: {
+            $gte: new Date(startDatetime.getTime() - minDays * 86400000),
+            $lte: new Date(startDatetime.getTime() + minDays * 86400000),
+          },
+        }
+      : {
+          customerId: customer._id,
+          status: { $in: ['confirmed', 'pending_verification'] },
+          startTime: { $gte: new Date() },
+        };
+
+    const existing = await Appointment.findOne(conflictQuery);
+    if (existing) return res.status(409).json({ error: 'already_booked' });
+
+    const appt = await Appointment.create({
+      customerId: customer._id,
+      serviceId: service._id,
+      startTime: startDatetime,
+      endTime: endDatetime,
+      status: 'confirmed',
+      notes,
+    });
+
+    res.status(201).json({ appointmentId: appt._id.toString() });
   } catch (err) {
-    if (err instanceof BookingError) return res.status(409).json({ error: err.bookingErrorType });
-    if (err.code === 11000) return res.status(409).json({ error: 'slot_taken' }); // unique index violation
+    if (err.code === 11000) return res.status(409).json({ error: 'slot_taken' });
     console.error('Appointment creation error:', err);
     res.status(500).json({ error: 'Server error', detail: err.message });
   }
