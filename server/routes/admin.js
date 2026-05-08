@@ -42,21 +42,26 @@ router.get('/dashboard', async (req, res) => {
 
 // Appointments
 router.get('/appointments', async (req, res) => {
-  await connectDB();
-  const { from, to, status } = req.query;
-  const query = {};
-  if (from || to) {
-    query.startTime = {};
-    if (from) query.startTime.$gte = new Date(from);
-    if (to) query.startTime.$lte = new Date(to);
+  try {
+    await connectDB();
+    const { from, to, status } = req.query;
+    const query = {};
+    if (from || to) {
+      query.startTime = {};
+      if (from) query.startTime.$gte = new Date(from);
+      if (to) query.startTime.$lte = new Date(to);
+    }
+    if (status && status !== 'all') query.status = status;
+    const appointments = await Appointment.find(query)
+      .sort({ startTime: 1 })
+      .populate('serviceId', 'name durationMinutes priceIls')
+      .populate('customerId', 'name phone')
+      .lean();
+    res.json({ appointments });
+  } catch (err) {
+    console.error('Admin appointments error:', err);
+    res.status(500).json({ error: 'Server error', appointments: [] });
   }
-  if (status && status !== 'all') query.status = status;
-  const appointments = await Appointment.find(query)
-    .sort({ startTime: 1 })
-    .populate('serviceId', 'name durationMinutes priceIls')
-    .populate('customerId', 'name phone')
-    .lean();
-  res.json({ appointments });
 });
 
 router.post('/appointments', async (req, res) => {

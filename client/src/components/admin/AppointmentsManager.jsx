@@ -72,7 +72,7 @@ function dayLabel(dateStr) {
 export function AppointmentsManager() {
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
-  const [preset, setPreset] = useState('today')
+  const [preset, setPreset] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [view, setView] = useState('schedule')
