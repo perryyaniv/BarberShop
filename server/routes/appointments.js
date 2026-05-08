@@ -96,24 +96,17 @@ router.post('/', async (req, res) => {
       await customer.save();
     }
 
-    // Check min days gap between appointments
-    const conflictQuery = minDays > 0
-      ? {
-          customerId: customer._id,
-          status: { $in: ['confirmed', 'pending_verification'] },
-          startTime: {
-            $gte: new Date(startDatetime.getTime() - minDays * 86400000),
-            $lte: new Date(startDatetime.getTime() + minDays * 86400000),
-          },
-        }
-      : {
-          customerId: customer._id,
-          status: { $in: ['confirmed', 'pending_verification'] },
-          startTime: { $gte: new Date() },
-        };
-
-    const existing = await Appointment.findOne(conflictQuery);
-    if (existing) return res.status(409).json({ error: 'already_booked' });
+    if (minDays > 0) {
+      const existing = await Appointment.findOne({
+        customerId: customer._id,
+        status: { $in: ['confirmed', 'pending_verification'] },
+        startTime: {
+          $gte: new Date(startDatetime.getTime() - minDays * 86400000),
+          $lte: new Date(startDatetime.getTime() + minDays * 86400000),
+        },
+      });
+      if (existing) return res.status(409).json({ error: 'already_booked' });
+    }
 
     const appt = await Appointment.create({
       customerId: customer._id,
