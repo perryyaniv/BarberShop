@@ -19,9 +19,9 @@ export function BookPage() {
   if (!customer) return null
 
   return (
-    <div className="min-h-screen bg-cream" dir="rtl">
+    <div className="h-screen flex flex-col bg-cream" dir="rtl">
       <Navbar />
-      <main className="container mx-auto px-4 py-10 max-w-2xl">
+      <main className="flex-1 min-h-0 overflow-hidden px-4 py-4 max-w-2xl mx-auto w-full">
         <BookingWizard services={services} />
       </main>
       <Toaster />

@@ -142,21 +142,21 @@ export function BookingWizard({ services }) {
     : ''
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+    <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 flex flex-col h-full">
       <Toaster />
-      <h1 className="text-2xl font-bold text-charcoal text-center mb-6">{t('booking.title')}</h1>
+      <h1 className="text-xl font-bold text-charcoal text-center mb-3">{t('booking.title')}</h1>
 
       {step < 4 && (
-        <div className="mb-8">
+        <div className="mb-4 shrink-0">
           <BookingStepper steps={steps.slice(0, 4)} currentStep={step} />
         </div>
       )}
 
       {/* Step 0: Select Service */}
       {step === 0 && (
-        <div className="space-y-4">
-          <h2 className="font-semibold text-lg text-ink">{t('booking.selectService')}</h2>
-          <div className="space-y-3">
+        <div className="flex flex-col flex-1 min-h-0">
+          <h2 className="font-semibold text-lg text-ink mb-3 shrink-0">{t('booking.selectService')}</h2>
+          <div className="space-y-3 overflow-y-auto flex-1">
             {services.map((service) => (
               <button
                 key={service._id}
@@ -184,52 +184,53 @@ export function BookingWizard({ services }) {
 
       {/* Step 1: Select Date */}
       {step === 1 && (
-        <div className="space-y-4">
-          <h2 className="font-semibold text-lg text-ink">{t('booking.selectDate')}</h2>
+        <div className="flex flex-col flex-1 min-h-0">
+          <h2 className="font-semibold text-lg text-ink mb-2 shrink-0">{t('booking.selectDate')}</h2>
           {daysLoading && (
-            <p className="text-center text-ink/40 text-sm py-2">{t('common.loading')}</p>
+            <p className="text-center text-ink/40 text-sm py-1 shrink-0">{t('common.loading')}</p>
           )}
-          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-            {Array.from({ length: 28 }).map((_, i) => {
-              const date = addDays(startOfToday(), i)
-              const dateStr = format(date, 'yyyy-MM-dd')
+          <div className="overflow-y-auto flex-1">
+            <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+              {Array.from({ length: 28 }).map((_, i) => {
+                const date = addDays(startOfToday(), i)
+                const dateStr = format(date, 'yyyy-MM-dd')
 
-              if (inactiveDays.has(date.getDay())) return null
+                if (inactiveDays.has(date.getDay())) return null
 
-              const isFull = !daysLoading && daysStatus[dateStr] === false
-              const todayEnded = isFull && isToday(date)
+                const isFull = !daysLoading && daysStatus[dateStr] === false
+                const todayEnded = isFull && isToday(date)
 
-              // Hide today if it has no more available slots
-              if (todayEnded) return null
+                if (todayEnded) return null
 
-              const isSelected = selectedDate === dateStr
+                const isSelected = selectedDate === dateStr
 
-              return (
-                <button
-                  key={dateStr}
-                  disabled={isFull}
-                  onClick={() => !isFull && setSelectedDate(dateStr)}
-                  className={cn(
-                    'flex flex-col items-center py-2 px-1 rounded-lg border text-sm transition-all',
-                    isSelected
-                      ? 'bg-gold border-gold text-charcoal font-bold shadow-md'
-                      : isFull
-                      ? 'border-ink/10 bg-ink/5 text-ink/30 cursor-not-allowed'
-                      : 'border-ink/15 hover:border-gold/50 bg-white text-ink'
-                  )}
-                >
-                  <span className="text-xs opacity-60">{format(date, 'EEE', { locale: dateLocale })}</span>
-                  <span className="font-semibold">{format(date, 'd')}</span>
-                  {isFull ? (
-                    <span className="text-xs text-red-400 font-medium">מלא</span>
-                  ) : (
-                    <span className="text-xs opacity-50">{format(date, 'MMM', { locale: dateLocale })}</span>
-                  )}
-                </button>
-              )
-            })}
+                return (
+                  <button
+                    key={dateStr}
+                    disabled={isFull}
+                    onClick={() => !isFull && setSelectedDate(dateStr)}
+                    className={cn(
+                      'flex flex-col items-center py-2 px-1 rounded-lg border text-sm transition-all',
+                      isSelected
+                        ? 'bg-gold border-gold text-charcoal font-bold shadow-md'
+                        : isFull
+                        ? 'border-ink/10 bg-ink/5 text-ink/30 cursor-not-allowed'
+                        : 'border-ink/15 hover:border-gold/50 bg-white text-ink'
+                    )}
+                  >
+                    <span className="text-xs opacity-60">{format(date, 'EEE', { locale: dateLocale })}</span>
+                    <span className="font-semibold">{format(date, 'd')}</span>
+                    {isFull ? (
+                      <span className="text-xs text-red-400 font-medium">מלא</span>
+                    ) : (
+                      <span className="text-xs opacity-50">{format(date, 'MMM', { locale: dateLocale })}</span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
           </div>
-          <div className="flex justify-between pt-2">
+          <div className="flex justify-between pt-3 mt-2 border-t border-ink/5 shrink-0">
             <Button variant="ghost" size="sm" onClick={() => setStep(0)}>
               <ChevronRight className="w-4 h-4 rtl:rotate-0 ltr:rotate-180 me-1" />{t('booking.back')}
             </Button>
@@ -242,19 +243,21 @@ export function BookingWizard({ services }) {
 
       {/* Step 2: Select Time */}
       {step === 2 && (
-        <div className="space-y-4">
-          <h2 className="font-semibold text-lg text-ink">
+        <div className="flex flex-col flex-1 min-h-0">
+          <h2 className="font-semibold text-lg text-ink mb-2 shrink-0">
             {t('booking.selectTime')}
-            {formattedDate && <span className="block text-sm font-normal text-ink/50 mt-1">{formattedDate}</span>}
+            {formattedDate && <span className="block text-sm font-normal text-ink/50 mt-0.5">{formattedDate}</span>}
           </h2>
-          {slotsLoading ? (
-            <p className="text-center text-ink/40 py-8">{t('common.loading')}</p>
-          ) : slots.length === 0 ? (
-            <p className="text-center text-ink/50 py-8">{t('booking.noSlotsAvailable')}</p>
-          ) : (
-            <TimeSlotGrid slots={slots.filter((s) => s.available)} selectedSlot={selectedTime} onSelect={setSelectedTime} />
-          )}
-          <div className="flex justify-between pt-2">
+          <div className="overflow-y-auto flex-1">
+            {slotsLoading ? (
+              <p className="text-center text-ink/40 py-8">{t('common.loading')}</p>
+            ) : slots.length === 0 ? (
+              <p className="text-center text-ink/50 py-8">{t('booking.noSlotsAvailable')}</p>
+            ) : (
+              <TimeSlotGrid slots={slots.filter((s) => s.available)} selectedSlot={selectedTime} onSelect={setSelectedTime} />
+            )}
+          </div>
+          <div className="flex justify-between pt-3 mt-2 border-t border-ink/5 shrink-0">
             <Button variant="ghost" size="sm" onClick={() => setStep(1)}>
               <ChevronRight className="w-4 h-4 rtl:rotate-0 ltr:rotate-180 me-1" />{t('booking.back')}
             </Button>
@@ -267,9 +270,9 @@ export function BookingWizard({ services }) {
 
       {/* Step 3: Confirm */}
       {step === 3 && selectedService && (
-        <div className="space-y-6">
-          <h2 className="font-semibold text-lg text-ink text-center">{t('booking.confirmBooking')}</h2>
-          <div className="bg-cream-warm rounded-xl p-5 space-y-3">
+        <div className="flex flex-col flex-1 min-h-0">
+          <h2 className="font-semibold text-lg text-ink text-center mb-4 shrink-0">{t('booking.confirmBooking')}</h2>
+          <div className="bg-cream-warm rounded-xl p-5 space-y-3 overflow-y-auto flex-1">
             <SummaryRow label={t('booking.steps.service')} value={selectedService.name[locale]} />
             <SummaryRow label={t('booking.steps.date')} value={formattedDate} />
             <SummaryRow label={t('booking.steps.time')} value={selectedTime} />
@@ -279,7 +282,7 @@ export function BookingWizard({ services }) {
               <span>{selectedService.durationMinutes} דקות</span>
             </div>
           </div>
-          <div className="flex justify-between">
+          <div className="flex justify-between pt-3 mt-2 border-t border-ink/5 shrink-0">
             <Button variant="ghost" size="sm" onClick={() => setStep(2)}>{t('booking.back')}</Button>
             <Button variant="gold" onClick={submitBooking} disabled={submitting} className="min-w-[140px]">
               {submitting ? t('common.loading') : t('booking.confirm')}
@@ -288,9 +291,9 @@ export function BookingWizard({ services }) {
         </div>
       )}
 
-      {/* Step 4: Success — only show confirmation, no extra actions */}
+      {/* Step 4: Success */}
       {step === 4 && selectedService && (
-        <div className="text-center space-y-6 py-4">
+        <div className="text-center space-y-6 py-4 flex-1 flex flex-col items-center justify-center">
           <div className="flex justify-center">
             <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
               <Check className="w-10 h-10 text-green-600" />
