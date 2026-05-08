@@ -89,11 +89,15 @@ function AddAppointmentModal({ onClose, onCreated }) {
 
   useEffect(() => {
     if (!form.serviceId || !form.date) { setSlots([]); return }
+    let cancelled = false
     setLoadingSlots(true)
-    api.get(`/api/appointments/available-slots?date=${form.date}&serviceId=${form.serviceId}`)
-      .then(({ data }) => setSlots(data.slots ?? []))
-      .catch(() => setSlots([]))
-      .finally(() => setLoadingSlots(false))
+    const base = import.meta.env.VITE_API_URL || ''
+    fetch(`${base}/api/appointments/available-slots?date=${form.date}&serviceId=${form.serviceId}`)
+      .then((r) => r.json())
+      .then((data) => { if (!cancelled) setSlots(data.slots ?? []) })
+      .catch(() => { if (!cancelled) setSlots([]) })
+      .finally(() => { if (!cancelled) setLoadingSlots(false) })
+    return () => { cancelled = true }
   }, [form.serviceId, form.date])
 
   function set(field, value) {
