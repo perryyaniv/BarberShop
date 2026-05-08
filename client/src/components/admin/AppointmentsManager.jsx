@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isToday, isTomorrow } from 'date-fns'
+import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isToday, isTomorrow, isPast } from 'date-fns'
 import { RefreshCw, Search, Calendar, List } from 'lucide-react'
 import { Card, CardContent } from '../ui/card'
 import { Button } from '../ui/button'
@@ -215,6 +215,7 @@ function ListView({ appointments, onUpdateStatus }) {
 
 function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
   const next = NEXT_STATUSES[a.status]
+  const past = isPast(new Date(a.startTime))
 
   return (
     <Card className={cn(a.status === 'cancelled' || a.status === 'no_show' ? 'opacity-60' : '')}>
@@ -244,12 +245,12 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
         </div>
         <div className="flex items-center gap-2 flex-wrap ms-12">
           <Badge variant={STATUS_COLORS[a.status]}>{STATUS_LABELS[a.status] ?? a.status}</Badge>
-          {next && (
+          {next && (next !== 'completed' || past) && (
             <Button size="sm" variant="secondary" onClick={() => onUpdateStatus(a._id, next)}>
               {NEXT_LABELS[next] ?? next}
             </Button>
           )}
-          {a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show' && (
+          {a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show' && past && (
             <Button size="sm" variant="outline" onClick={() => onUpdateStatus(a._id, 'no_show')}>
               לא הגיע
             </Button>
