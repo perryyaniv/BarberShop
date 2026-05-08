@@ -216,11 +216,14 @@ function ListView({ appointments, onUpdateStatus }) {
 function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
   const next = NEXT_STATUSES[a.status]
   const past = isPast(new Date(a.startTime))
+  const hasActions =
+    (next && (next !== 'completed' || past)) ||
+    (a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show')
 
   return (
     <Card className={cn(a.status === 'cancelled' || a.status === 'no_show' ? 'opacity-60' : '')}>
       <CardContent className="py-3 px-4">
-        <div className="flex items-start gap-3 min-w-0 mb-2">
+        <div className="flex items-start gap-3 min-w-0">
           <div className="text-center shrink-0 w-12">
             <p className="font-mono font-bold text-charcoal text-base" dir="ltr">
               {format(new Date(a.startTime), 'HH:mm')}
@@ -228,39 +231,48 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
             {showDate && <p className="text-xs text-ink/40 mt-0.5">{format(new Date(a.startTime), 'd/M')}</p>}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <p className="font-semibold text-ink">{a.customerId?.name ?? 'לא ידוע'}</p>
-              {a.customerId?.phone && (
-                <a href={`tel:${a.customerId.phone}`} className="text-xs text-ink/50 hover:text-gold transition-colors font-mono" dir="ltr">
-                  {formatPhone(a.customerId.phone)}
-                </a>
-              )}
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-semibold text-ink">{a.customerId?.name ?? 'לא ידוע'}</p>
+                  {a.customerId?.phone && (
+                    <a href={`tel:${a.customerId.phone}`} className="text-xs text-ink/50 hover:text-gold transition-colors font-mono" dir="ltr">
+                      {formatPhone(a.customerId.phone)}
+                    </a>
+                  )}
+                </div>
+                <p className="text-sm text-ink/60 truncate mt-0.5">
+                  {a.serviceId?.name?.he ?? 'שירות'}
+                  <span className="text-ink/40"> · ₪{a.serviceId?.priceIls} · {a.serviceId?.durationMinutes} דק׳</span>
+                </p>
+                {a.notes && <p className="text-xs text-ink/40 italic mt-0.5 truncate">{a.notes}</p>}
+              </div>
+              <Badge variant={STATUS_COLORS[a.status]} className="shrink-0 mt-0.5">
+                {STATUS_LABELS[a.status] ?? a.status}
+              </Badge>
             </div>
-            <p className="text-sm text-ink/60 truncate">
-              {a.serviceId?.name?.he ?? 'שירות'}
-              <span className="text-ink/40"> · ₪{a.serviceId?.priceIls} · {a.serviceId?.durationMinutes} דק׳</span>
-            </p>
-            {a.notes && <p className="text-xs text-ink/40 italic mt-0.5 truncate">{a.notes}</p>}
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-wrap ms-12">
-          <Badge variant={STATUS_COLORS[a.status]}>{STATUS_LABELS[a.status] ?? a.status}</Badge>
-          {next && (next !== 'completed' || past) && (
-            <Button size="sm" variant="secondary" onClick={() => onUpdateStatus(a._id, next)}>
-              {NEXT_LABELS[next] ?? next}
-            </Button>
-          )}
-          {a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show' && past && (
-            <Button size="sm" variant="outline" onClick={() => onUpdateStatus(a._id, 'no_show')}>
-              לא הגיע
-            </Button>
-          )}
-          {a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show' && (
-            <Button size="sm" variant="destructive" onClick={() => onUpdateStatus(a._id, 'cancelled')}>
-              בטל
-            </Button>
-          )}
-        </div>
+
+        {hasActions && (
+          <div className="flex items-center gap-2 flex-wrap mt-3 pt-2.5 border-t border-ink/10 ms-12">
+            {next && (next !== 'completed' || past) && (
+              <Button size="sm" variant="secondary" onClick={() => onUpdateStatus(a._id, next)}>
+                {NEXT_LABELS[next] ?? next}
+              </Button>
+            )}
+            {a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show' && past && (
+              <Button size="sm" variant="outline" onClick={() => onUpdateStatus(a._id, 'no_show')}>
+                לא הגיע
+              </Button>
+            )}
+            {a.status !== 'cancelled' && a.status !== 'completed' && a.status !== 'no_show' && (
+              <Button size="sm" variant="destructive" onClick={() => onUpdateStatus(a._id, 'cancelled')}>
+                בטל
+              </Button>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   )
