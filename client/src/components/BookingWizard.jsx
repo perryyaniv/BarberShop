@@ -190,7 +190,7 @@ export function BookingWizard({ services }) {
             <p className="text-center text-ink/40 text-sm py-1 shrink-0">{t('common.loading')}</p>
           )}
           <div className="overflow-y-auto flex-1">
-            <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-1.5">
               {Array.from({ length: 28 }).map((_, i) => {
                 const date = addDays(startOfToday(), i)
                 const dateStr = format(date, 'yyyy-MM-dd')
@@ -210,7 +210,7 @@ export function BookingWizard({ services }) {
                     disabled={isFull}
                     onClick={() => !isFull && setSelectedDate(dateStr)}
                     className={cn(
-                      'flex flex-col items-center py-2 px-1 rounded-lg border text-sm transition-all',
+                      'flex flex-col items-center py-1.5 px-0.5 rounded-lg border text-xs transition-all',
                       isSelected
                         ? 'bg-gold border-gold text-charcoal font-bold shadow-md'
                         : isFull
@@ -218,12 +218,12 @@ export function BookingWizard({ services }) {
                         : 'border-ink/15 hover:border-gold/50 bg-white text-ink'
                     )}
                   >
-                    <span className="text-xs opacity-60">{format(date, 'EEE', { locale: dateLocale })}</span>
-                    <span className="font-semibold">{format(date, 'd')}</span>
+                    <span className="opacity-60 text-[10px]">{format(date, 'EEE', { locale: dateLocale })}</span>
+                    <span className="font-semibold text-sm">{format(date, 'd')}</span>
                     {isFull ? (
-                      <span className="text-xs text-red-400 font-medium">מלא</span>
+                      <span className="text-[10px] text-red-400 font-medium">מלא</span>
                     ) : (
-                      <span className="text-xs opacity-50">{format(date, 'MMM', { locale: dateLocale })}</span>
+                      <span className="opacity-50 text-[10px]">{format(date, 'MMM', { locale: dateLocale })}</span>
                     )}
                   </button>
                 )

@@ -19,7 +19,7 @@ export function BookPage() {
   if (!customer) return null
 
   return (
-    <div className="h-screen flex flex-col bg-cream" dir="rtl">
+    <div className="flex flex-col bg-cream" style={{ height: '100dvh' }} dir="rtl">
       <Navbar />
       <main className="flex-1 min-h-0 overflow-hidden px-4 py-4 max-w-2xl mx-auto w-full">
         <BookingWizard services={services} />
