@@ -257,7 +257,12 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
         {hasActions && (
           <div className="flex items-center gap-2 flex-wrap mt-3 pt-2.5 border-t border-ink/10 ms-12">
             {next && (next !== 'completed' || past) && (
-              <Button size="sm" variant="secondary" onClick={() => onUpdateStatus(a._id, next)}>
+              <Button
+                size="sm"
+                variant="outline"
+                className={cn(next === 'completed' && 'border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700')}
+                onClick={() => onUpdateStatus(a._id, next)}
+              >
                 {NEXT_LABELS[next] ?? next}
               </Button>
             )}
