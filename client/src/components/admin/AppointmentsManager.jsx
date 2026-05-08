@@ -257,7 +257,7 @@ function AppointmentCard({ appt: a, onUpdateStatus, showDate = false }) {
   const hasActions = showConfirm || showComplete || showNoShow || showCancel
 
   return (
-    <Card className={cn(terminal ? 'opacity-60' : '')}>
+    <Card className={cn(terminal ? 'opacity-60' : '', a.status === 'confirmed' && 'border-green-300')}>
       <CardContent className="py-3 px-4">
         <div className="flex items-start gap-3 min-w-0">
           <div className="text-center shrink-0 w-12">
