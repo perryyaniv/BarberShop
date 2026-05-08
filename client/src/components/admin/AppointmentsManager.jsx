@@ -87,6 +87,9 @@ export function AppointmentsManager() {
       if (s !== 'all') params.set('status', s)
       const { data } = await api.get(`/api/admin/appointments?${params}`)
       setAppointments(data.appointments ?? [])
+    } catch (err) {
+      toast({ variant: 'destructive', title: `שגיאה בטעינת תורים: ${err.response?.data?.error || err.message}` })
+      setAppointments([])
     } finally {
       setLoading(false)
     }
