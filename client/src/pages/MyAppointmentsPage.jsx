@@ -58,8 +58,13 @@ export function MyAppointmentsPage() {
       await api.post(`/api/appointments/${id}/cancel`)
       toast({ variant: 'success', title: 'התור בוטל בהצלחה' })
       load()
-    } catch {
-      toast({ variant: 'destructive', title: 'שגיאה בביטול התור' })
+    } catch (err) {
+      if (err.response?.data?.error === 'already_cancelled') {
+        toast({ variant: 'destructive', title: 'התור כבר בוטל' })
+      } else {
+        toast({ variant: 'destructive', title: 'שגיאה בביטול התור' })
+      }
+      load()
     } finally {
       setCancelling(null)
     }

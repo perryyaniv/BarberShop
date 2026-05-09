@@ -104,21 +104,26 @@ router.post('/appointments', async (req, res) => {
 });
 
 router.put('/appointments/:id', async (req, res) => {
-  await connectDB();
-  const { status, cancelReason } = req.body;
-  const validStatuses = ['confirmed', 'completed', 'cancelled', 'no_show'];
-  if (status && !validStatuses.includes(status)) {
-    return res.status(400).json({ error: 'Invalid status' });
+  try {
+    await connectDB();
+    const { status, cancelReason } = req.body;
+    const validStatuses = ['confirmed', 'completed', 'cancelled', 'no_show'];
+    if (status && !validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+    const update = {};
+    if (status) update.status = status;
+    if (status === 'cancelled') {
+      update.cancelledAt = new Date();
+      update.cancelReason = cancelReason || 'Admin cancelled';
+    }
+    const appt = await Appointment.findByIdAndUpdate(req.params.id, update, { new: true });
+    if (!appt) return res.status(404).json({ error: 'Not found' });
+    res.json({ appointment: appt });
+  } catch (err) {
+    console.error('Admin update appointment error:', err);
+    res.status(500).json({ error: 'Server error' });
   }
-  const update = {};
-  if (status) update.status = status;
-  if (status === 'cancelled') {
-    update.cancelledAt = new Date();
-    update.cancelReason = cancelReason || 'Admin cancelled';
-  }
-  const appt = await Appointment.findByIdAndUpdate(req.params.id, update, { new: true });
-  if (!appt) return res.status(404).json({ error: 'Not found' });
-  res.json({ appointment: appt });
 });
 
 // Services

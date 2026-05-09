@@ -154,7 +154,10 @@ router.post('/:id/cancel', async (req, res) => {
     await connectDB();
     const appointment = await Appointment.findById(req.params.id);
     if (!appointment) return res.status(404).json({ error: 'Not found' });
-    if (['cancelled', 'completed'].includes(appointment.status)) {
+    if (appointment.status === 'cancelled') {
+      return res.status(409).json({ error: 'already_cancelled' });
+    }
+    if (['completed', 'no_show'].includes(appointment.status)) {
       return res.status(409).json({ error: 'Cannot cancel this appointment' });
     }
     appointment.status = 'cancelled';
