@@ -79,7 +79,14 @@ cron.schedule('0 7,17 * * *', async () => {
 });
 
 connectDB()
-  .then(() => {
+  .then(async () => {
+    const Appointment = require('./models/Appointment');
+    try {
+      await Appointment.syncIndexes();
+      console.log('Indexes synced');
+    } catch (err) {
+      console.error('Index sync error:', err.message);
+    }
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch((err) => {

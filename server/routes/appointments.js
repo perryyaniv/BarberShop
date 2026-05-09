@@ -160,14 +160,17 @@ router.post('/:id/cancel', async (req, res) => {
     if (['completed', 'no_show'].includes(appointment.status)) {
       return res.status(409).json({ error: 'Cannot cancel this appointment' });
     }
-    appointment.status = 'cancelled';
-    appointment.cancelledAt = new Date();
-    appointment.cancelReason = req.body.cancelReason || 'Customer cancelled';
-    await appointment.save();
+    await Appointment.findByIdAndUpdate(req.params.id, {
+      $set: {
+        status: 'cancelled',
+        cancelledAt: new Date(),
+        cancelReason: req.body.cancelReason || 'Customer cancelled',
+      },
+    });
     res.json({ success: true });
   } catch (err) {
     console.error('Cancel error:', err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error', code: err.code });
   }
 });
 
