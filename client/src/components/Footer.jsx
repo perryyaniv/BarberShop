@@ -15,7 +15,7 @@ export function Footer({ shop }) {
               <Scissors className="w-5 h-5 text-gold" />
               <span className="font-bold text-lg text-gold">{shopName}</span>
             </div>
-            <p className="text-white/50 text-sm leading-relaxed">ספרות מקצועית לגברים</p>
+            <p className="text-white/50 text-sm leading-relaxed">ספרות מקצועית לגברים וילדים</p>
           </div>
 
           <div>
