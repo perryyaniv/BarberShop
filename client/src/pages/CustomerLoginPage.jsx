@@ -155,7 +155,7 @@ export function CustomerLoginPage() {
               disabled={loading || !form.firstName.trim() || !form.lastName.trim() || !form.phone.trim()}
             >
               <Scissors className="w-4 h-4 me-2" />
-              {loading ? 'מאמת...' : customer ? 'עדכן ועבור להזמנה' : 'כניסה והזמנת תור'}
+              {loading ? 'מאמת...' : customer ? 'עדכן ועבור להזמנה' : 'כניסה'}
             </Button>
           </form>
         </div>
