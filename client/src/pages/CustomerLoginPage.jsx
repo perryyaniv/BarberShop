@@ -160,9 +160,6 @@ export function CustomerLoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-white/30 text-xs mt-6">
-          הפרטים נשמרים על המכשיר שלך בלבד
-        </p>
       </div>
     </div>
   )
